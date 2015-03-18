@@ -3,24 +3,10 @@
 
 \label{chapter:design}
 
-% Agents equation
-
-\begin{equation}
-    \zeta_a(t) =
-        \begin{cases}
-            \zeta_a(t - \delta t) + \zeta_a'(t) \cdot \delta t + \rho&
-            \text{if } t > 0 \\
-            \zeta^{(0)}_a      & \text{if } t = 0
-        \end{cases}
-    \label{eq:agent}
-\end{equation}
-
-Where $\rho \sim \mathcal{U}(-\epsilon, \epsilon)$ and $\epsilon > 0$.
-
 % Single agent PDF
 
 \begin{equation}
-    P^{(t_0, t_m)}_a(x, y) = \int^{t_m}_{t_0}
+    P_a(x, y, t_0, t_m) = \int^{t_m}_{t_0}
     \mathcal{N}(\zeta_a(t), \alpha \cdot (t - t_0)^2 + \beta, x, y) \cdot
     (t_m - t)^{\gamma} \mathrm{d}t
     \label{eq:singleprob}
@@ -33,17 +19,17 @@ y)$.
 % Multiple agent PDF
 
 \begin{equation}
-    P^{(t_0, t_m)}_A(x, y) = \frac{\mathlarger{\sum_{a \in A}
-    P^{(t_0, t_m)}_a(x, y)}}{|A|}
+    P_A(x, y, t_0, t_m) = \frac{\mathlarger{\sum_{a \in A}
+    P_a(x, y, t_0, t_m)}}{|A|}
     \label{eq:prob}
 \end{equation}
 
 % Graph cost function
 
 \begin{equation}
-    C^{(t_0, t_m)}_A(i, j) = \int^1_0 \exp{\Big(
-        P^{(t_0, t_m)}_A(x(\lambda), y(\lambda)) \Big)
-    } \cdot ||i - j|| \mathrm{d}\lambda
+    C_A(i, j) = \int^1_0 \exp{\Big(
+        P_A(x(\lambda), y(\lambda), i_t, j_t) \Big)
+    } \cdot ||i - j||_{2} \mathrm{d}\lambda
     \label{eq:cost}
 \end{equation}
 
@@ -51,10 +37,26 @@ Where $x(\lambda) = (j_x - i_x) \cdot \lambda + i_x$ and $y(\lambda) = (j_y -
 i_y) \cdot \lambda + i_y$ are the parametric equations of the line from $i$ to
 $j$.
 
+% Obstacle equation
+
+\begin{equation}
+    \tilde{\zeta_a}(t) =
+        \begin{cases}
+            \tilde{\zeta_a}(t - \delta t) + \zeta_a'(t) \cdot \delta t + \rho&
+            \text{if } t > 0 \\
+            \zeta^{(0)}_a      & \text{if } t = 0
+        \end{cases}
+    \label{eq:agent}
+\end{equation}
+
+Where $\rho \sim \mathcal{U}(-\epsilon, \epsilon)$, $\epsilon > 0$, and
+$\zeta^{(0)}_a$ is the initial position of the obstacle.
+
+
 \begin{algorithm}[ht]
-    \caption{$\Function{roadmap}(n, d, O)$}
+    \caption{$\Function{Roadmap}(n, d, w, h, O)$}
     \algorithmicrequire{
-        \\$n$: Maximum number of possible samples
+        \\$n$: Maximum number of samples
         \\$d$: Maximum distance between neighbouring nodes
         \\$O$: Set of obstacles
     }
@@ -68,8 +70,8 @@ $j$.
         \vspace*{1mm}
 
         \FOR{$i = 1$ \TO $n$}
-            \STATE $q \leftarrow \Function{RandomPoint}(W)$
-            \IF{$\bigwedge_{o \in O} \neg o.\Var{inside}(q)$}
+            \STATE $q \leftarrow \Function{RandomPoint2D}(w, h)$
+            \IF{$\bigwedge_{o \in O} \neg \Function{Collision}(o, q)$}
                 \STATE $V \leftarrow V \cup \{q\}$
             \ENDIF
         \ENDFOR
@@ -83,5 +85,102 @@ $j$.
             \ENDFOR
         \ENDFOR
         \RETURN $(V,E)$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[ht]
+    \caption{$\Function{GetPath}(n, d, w, h, \delta, p, g, O, A, R)$}
+    % \algorithmicrequire{}
+    % \\\algorithmicensure{}
+    \label{algo:path}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \STATE $(V, E) \leftarrow \Function{Roadmap}(n, d, w, h, O)$
+        \STATE $\Pi \leftarrow \Function{Set}()$
+        \STATE $q \leftarrow p$
+        \WHILE {$||\Function{Back}(\Pi) - g||_2 > R$}
+            \STATE $\pi \leftarrow \Function{SearchGraph}(V, E, R, A, q, g)$
+            \FORALL {$i \in \pi$}
+                \STATE $\Pi \leftarrow \Pi \cup \{i\}$
+                \FORALL {$a \in A$}
+                    \STATE $\Function{Step}(a)$
+                \ENDFOR
+                \IF {$\bigvee_{a \in A} ||\tilde{\zeta_a}(i_t) -
+                    \zeta_a(i_t)|| > \delta$}
+                    \FORALL {$a \in A$}
+                        \STATE $\Function{Update}(\zeta_a, \tilde{\zeta_a})$
+                    \ENDFOR
+                    \STATE $q \leftarrow i$
+                \ENDIF
+            \ENDFOR
+        \ENDWHILE
+        \RETURN $\Pi$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[ht]
+    \caption{$\Function{SearchGraph}(V, E, R, A, p, g)$}
+    % \algorithmicrequire{}
+    % \\\algorithmicensure{}
+    \label{algo:search}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+        \STATE $Q \leftarrow \Function{PriorityQueue}()$
+        \STATE $D \leftarrow \Function{Dictionary}()$
+        \STATE $\Pi \leftarrow \Function{Dictionary}()$
+        \STATE $\Function{Insert}(Q, p, 0)$
+        \WHILE {$\neg \Function{Empty}(Q)$}
+            \STATE $q, w \leftarrow \Function{Pop}(Q)$
+            \IF{$||q - g||_2 \leq R$}
+                \RETURN $\Function{BacktrackPath}(p, g, \Pi)$
+            \ENDIF
+            \STATE $N \leftarrow \Function{GetTemporalNeighbours}(V, E, q)$
+            \FORALL{$n \in N$}
+                \STATE $\Pi_n \leftarrow q$
+                \STATE $c \leftarrow \psi \cdot C_A(q, n) + \omega \cdot D_n$
+                \STATE $D_n \leftarrow D_n + 1$
+                \IF {$w > c$}
+                    \STATE $c \leftarrow w$
+                \ENDIF
+                \STATE $Q \leftarrow \Function{Insert}(Q, n, q)$
+            \ENDFOR
+        \ENDWHILE
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[ht]
+    \caption{$\Function{GetTemporalNeighbours}(V, E, q)$}
+    % \algorithmicrequire{}
+    % \\\algorithmicensure{}
+    \label{algo:backtrack}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+        \STATE $S \leftarrow Set()$
+        \STATE $N \leftarrow \Function{Neighbours}(q)$
+        \FORALL {$n \in N$}
+            \STATE $t \leftarrow ||q - n||_2 / v + q_t$
+            \STATE $S \leftarrow S \cup \{(n_x, n_y, t)\}$
+        \ENDFOR
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[ht]
+    \caption{$\Function{BacktrackPath}(p, g, \Pi)$}
+    % \algorithmicrequire{}
+    % \\\algorithmicensure{}
+    \label{algo:backtrack}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+        \STATE $q \leftarrow g$
+        \STATE $S \leftarrow \Function{Stack}()$
+        \WHILE {$\Pi_q \neq p$}
+            \STATE $S \leftarrow \Function{Push}(S, q)$
+            \STATE $q \leftarrow \Pi_q$
+        \ENDWHILE
+        \STATE $S \leftarrow \Function{Push}(S, p)$
+        \RETURN $S$
     \end{algorithmic}
 \end{algorithm}
