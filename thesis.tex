@@ -1,0 +1,121 @@
+\documentclass{report}
+
+%\documentclass[journal]{IEEEtran}
+%\documentclass{report}
+%\documentclass{acta}
+
+\usepackage{geometry}
+
+ \geometry{
+ a4paper,
+ total={210mm,297mm},
+ left=25mm,
+ right=25mm,
+ top=25mm,
+ bottom=25mm,
+ }
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\setlength{\parskip}{1em}
+
+\usepackage{amsmath, amssymb}
+
+\usepackage[pdftex]{graphicx}
+
+\usepackage{float}
+
+\usepackage{relsize}
+
+\usepackage{algorithm}
+
+\usepackage{fancyvrb}
+
+\usepackage[noend]{algorithmic}
+
+\usepackage{subfiles}
+
+\usepackage{titlecaps}
+
+\usepackage{fancyhdr}
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\newcommand{\tab}[1]{\hspace{.2\textwidth}\rlap{#1}}
+\newcommand{\itab}[1]{\hspace{0em}\rlap{#1}}
+
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\newcommand{\Acronym}[1]{\ensuremath{{{\texttt{#1}}}}}
+\newcommand{\Symbol}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\Function}[1]{\ensuremath{{ \textsc{#1}}}}
+\newcommand{\Constant}[1]{\ensuremath{{\texttt{#1}}}}
+\newcommand{\Var}[1]{\ensuremath{{{\textsl{#1}}}}}
+\newcommand{\False}{\Constant{false}}
+\newcommand{\True}{\Constant{true}}
+\newcommand{\Null}{\Constant{null}}
+\newcommand{\Name}{\Acronym{dCRoPS}}
+\newcommand{\Revision}[1]{\textcolor{red}{#1}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\Traj}{\ensuremath{\zeta}}
+\newcommand{\Tree}{\Symbol{T}}
+\newcommand{\pair}[1]{\ensuremath{\langle#1\rangle}}
+
+\newcommand{\mychange}[1]{\textcolor{red}{#1}}
+
+\pagestyle{fancy}
+
+\fancyhf{}
+
+\fancyhead[CE,LO]{\leftmark}
+
+\fancyfoot[LE,CO]{\thepage}
+
+\renewcommand{\headrulewidth}{0.5pt}
+
+\begin{document}
+
+\subfile{formal/title}
+
+\pagebreak
+
+\begin{abstract}
+
+\end{abstract}
+
+\pagebreak
+
+\subfile{formal/declaration}
+
+\pagebreak
+
+\tableofcontents
+
+% \subfile{chapters/introduction}
+% 
+% \subfile{chapters/objectives}
+% 
+% \subfile{chapters/ethics}
+% 
+% \subfile{chapters/context-survey}
+% 
+% \subfile{chapters/requirements}
+% 
+% \subfile{chapters/methodology}
+% 
+\subfile{chapters/design}
+%
+% \subfile{chapters/implementation}
+% 
+% \subfile{chapters/results}
+% 
+\subfile{chapters/discussion}
+% 
+% \subfile{chapters/acknowledgements}
+
+\bibliographystyle{IEEEtran}
+
+\bibliography{bibliography}
+
+\end{document}

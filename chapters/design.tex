@@ -1,0 +1,87 @@
+
+\chapter{Design}
+
+\label{chapter:design}
+
+% Agents equation
+
+\begin{equation}
+    \zeta_a(t) =
+        \begin{cases}
+            \zeta_a(t - \delta t) + \zeta_a'(t) \cdot \delta t + \rho&
+            \text{if } t > 0 \\
+            \zeta^{(0)}_a      & \text{if } t = 0
+        \end{cases}
+    \label{eq:agent}
+\end{equation}
+
+Where $\rho \sim \mathcal{U}(-\epsilon, \epsilon)$ and $\epsilon > 0$.
+
+% Single agent PDF
+
+\begin{equation}
+    P^{(t_0, t_m)}_a(x, y) = \int^{t_m}_{t_0}
+    \mathcal{N}(\zeta_a(t), \alpha \cdot (t - t_0)^2 + \beta, x, y) \cdot
+    (t_m - t)^{\gamma} \mathrm{d}t
+    \label{eq:singleprob}
+\end{equation}
+
+Where $\mathcal{N}(\mu, \sigma^2, x, y)$ is the evaluation of a 3D normal
+distribution centered at $(\mu_x, \mu_y)$ with a variance of $\sigma^2$ at $(x,
+y)$.
+
+% Multiple agent PDF
+
+\begin{equation}
+    P^{(t_0, t_m)}_A(x, y) = \frac{\mathlarger{\sum_{a \in A}
+    P^{(t_0, t_m)}_a(x, y)}}{|A|}
+    \label{eq:prob}
+\end{equation}
+
+% Graph cost function
+
+\begin{equation}
+    C^{(t_0, t_m)}_A(i, j) = \int^1_0 \exp{\Big(
+        P^{(t_0, t_m)}_A(x(\lambda), y(\lambda)) \Big)
+    } \cdot ||i - j|| \mathrm{d}\lambda
+    \label{eq:cost}
+\end{equation}
+
+Where $x(\lambda) = (j_x - i_x) \cdot \lambda + i_x$ and $y(\lambda) = (j_y -
+i_y) \cdot \lambda + i_y$ are the parametric equations of the line from $i$ to
+$j$.
+
+\begin{algorithm}[ht]
+    \caption{$\Function{roadmap}(n, d, O)$}
+    \algorithmicrequire{
+        \\$n$: Maximum number of possible samples
+        \\$d$: Maximum distance between neighbouring nodes
+        \\$O$: Set of obstacles
+    }
+    \\\algorithmicensure{
+        \\An unweighted graph of points describing the
+        connectivity of the environment
+    }
+    \label{algo:PRM}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+
+        \FOR{$i = 1$ \TO $n$}
+            \STATE $q \leftarrow \Function{RandomPoint}(W)$
+            \IF{$\bigwedge_{o \in O} \neg o.\Var{inside}(q)$}
+                \STATE $V \leftarrow V \cup \{q\}$
+            \ENDIF
+        \ENDFOR
+
+        \FORALL{$q_i \in V$}
+            \FORALL{$q_j \in V$}
+                \IF{$q_i \neq q_j \wedge ||q_i - q_j|| \leq d$}
+                    \STATE $E \leftarrow E \cup \{(q_i, q_j)\}$
+                    % \STATE $E \leftarrow E \cup \{(q_j, q_i)\}$
+                \ENDIF
+            \ENDFOR
+        \ENDFOR
+        \RETURN $(V,E)$
+    \end{algorithmic}
+\end{algorithm}
