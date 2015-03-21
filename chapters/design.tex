@@ -46,13 +46,13 @@ $j$.
             \text{if } t > 0 \\
             \zeta^{(0)}_a      & \text{if } t = 0
         \end{cases}
-    \label{eq:agent}
+    \label{eq:obs}
 \end{equation}
 
 Where $\rho \sim \mathcal{U}(-\epsilon, \epsilon)$, $\epsilon > 0$, and
 $\zeta^{(0)}_a$ is the initial position of the obstacle.
 
-
+% Algorithm to generate a roadmap
 \begin{algorithm}[ht]
     \caption{$\Function{Roadmap}(n, d, w, h, O)$}
     \algorithmicrequire{
@@ -64,7 +64,7 @@ $\zeta^{(0)}_a$ is the initial position of the obstacle.
         \\An unweighted graph of points describing the
         connectivity of the environment
     }
-    \label{algo:PRM}
+    \label{algo:prm}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
         \vspace*{1mm}
@@ -88,10 +88,16 @@ $\zeta^{(0)}_a$ is the initial position of the obstacle.
     \end{algorithmic}
 \end{algorithm}
 
+% Main algorithm to get the path
 \begin{algorithm}[ht]
     \caption{$\Function{GetPath}(n, d, w, h, \delta, p, g, O, A, R)$}
-    % \algorithmicrequire{}
-    % \\\algorithmicensure{}
+    \algorithmicrequire{
+        \\$n$: Maximum number of samples for the roadmap
+        \\$d$: Maximum distance between neighbouring nodes in the roadmap
+        \\$w$: Width of the scene
+        \\$h$: Height of the scene
+    }
+    \\\algorithmicensure{}
     \label{algo:path}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
@@ -111,6 +117,7 @@ $\zeta^{(0)}_a$ is the initial position of the obstacle.
                         \STATE $\Function{Update}(\zeta_a, \tilde{\zeta_a})$
                     \ENDFOR
                     \STATE $q \leftarrow i$
+                    \STATE $\textbf{break}$
                 \ENDIF
             \ENDFOR
         \ENDWHILE
@@ -118,6 +125,7 @@ $\zeta^{(0)}_a$ is the initial position of the obstacle.
     \end{algorithmic}
 \end{algorithm}
 
+% Algorithm to search the graph
 \begin{algorithm}[ht]
     \caption{$\Function{SearchGraph}(V, E, R, A, p, g)$}
     % \algorithmicrequire{}
@@ -149,23 +157,25 @@ $\zeta^{(0)}_a$ is the initial position of the obstacle.
     \end{algorithmic}
 \end{algorithm}
 
+% Gets the neighbours in space-time
 \begin{algorithm}[ht]
     \caption{$\Function{GetTemporalNeighbours}(V, E, q)$}
     % \algorithmicrequire{}
     % \\\algorithmicensure{}
-    \label{algo:backtrack}
+    \label{algo:neighbours}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
         \vspace*{1mm}
         \STATE $S \leftarrow Set()$
-        \STATE $N \leftarrow \Function{Neighbours}(q)$
+        \STATE $N \leftarrow \Function{Neighbours}(V, E, q)$
         \FORALL {$n \in N$}
-            \STATE $t \leftarrow ||q - n||_2 / v + q_t$
+            \STATE $t \leftarrow ||q - n||_2 / s + q_t$
             \STATE $S \leftarrow S \cup \{(n_x, n_y, t)\}$
         \ENDFOR
     \end{algorithmic}
 \end{algorithm}
 
+% Given a parent dictionary, this returns the backtracked path
 \begin{algorithm}[ht]
     \caption{$\Function{BacktrackPath}(p, g, \Pi)$}
     % \algorithmicrequire{}
