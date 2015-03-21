@@ -3,6 +3,8 @@
 
 \label{chapter:design}
 
+\section{Agents}
+
 % Single agent PDF
 
 \begin{equation}
@@ -24,19 +26,6 @@ y)$.
     \label{eq:prob}
 \end{equation}
 
-% Graph cost function
-
-\begin{equation}
-    C_A(i, j) = \int^1_0 \exp{\Big(
-        P_A(x(\lambda), y(\lambda), i_t, j_t) \Big)
-    } \cdot ||i - j||_{2} \mathrm{d}\lambda
-    \label{eq:cost}
-\end{equation}
-
-Where $x(\lambda) = (j_x - i_x) \cdot \lambda + i_x$ and $y(\lambda) = (j_y -
-i_y) \cdot \lambda + i_y$ are the parametric equations of the line from $i$ to
-$j$.
-
 % Obstacle equation
 
 \begin{equation}
@@ -51,6 +40,43 @@ $j$.
 
 Where $\rho \sim \mathcal{U}(-\epsilon, \epsilon)$, $\epsilon > 0$, and
 $\zeta^{(0)}_a$ is the initial position of the obstacle.
+
+\begin{figure}[h!]
+
+    \centering
+
+    \includegraphics[width=0.24\linewidth]{figs/agent_1}
+    \includegraphics[width=0.24\linewidth]{figs/agent_2}
+    \includegraphics[width=0.24\linewidth]{figs/agent_3}
+    \includegraphics[width=0.24\linewidth]{figs/agent_4} \\
+    \includegraphics[width=0.24\linewidth]{figs/agent_5}
+    \includegraphics[width=0.24\linewidth]{figs/agent_6}
+    \includegraphics[width=0.24\linewidth]{figs/agent_7}
+    \includegraphics[width=0.24\linewidth]{figs/agent_8}
+
+    \caption{Cost distributions indicating the likelihood that an agent will be
+    at a certain location within a given time interval.  These figures show how
+this distribution changes over time (left to right, top to bottom)}
+
+    \label{fig:agent_cost}
+
+\end{figure}
+
+\section{Planning Algorithm}
+
+% Graph cost function
+
+\begin{equation}
+    C_A(i, j) = \int^1_0 \exp{\Big(
+        P_A(x(\lambda), y(\lambda), i_t, j_t) \Big)
+    } \cdot ||i - j||_{2} \mathrm{d}\lambda
+    \label{eq:cost}
+\end{equation}
+
+Where $x(\lambda) = (j_x - i_x) \cdot \lambda + i_x$ and $y(\lambda) = (j_y -
+i_y) \cdot \lambda + i_y$ are the parametric equations of the line from $i$ to
+$j$.
+
 
 % Algorithm to generate a roadmap
 \begin{algorithm}[ht]
