@@ -10,7 +10,7 @@
 \begin{equation}
     P_a(x, y, t_0, t_m) = \int^{t_m}_{t_0}
     \mathcal{N}(\zeta_a(t), \alpha \cdot (t - t_0)^2 + \beta, x, y) \cdot
-    (t_m - t)^{\gamma} \mathrm{d}t
+    (t_m - t)^{\gamma} \,\mathrm{d}t
     \label{eq:singleprob}
 \end{equation}
 
@@ -68,8 +68,8 @@ this distribution changes over time (left to right, top to bottom)}
 
 \begin{equation}
     C_A(i, j) = \int^1_0 \exp{\Big(
-        P_A(x(\lambda), y(\lambda), i_t, j_t) \Big)
-    } \cdot ||i - j||_{2} \mathrm{d}\lambda
+        P_A(x(\lambda), y(\lambda), i_t, j_t) + 1 \Big)
+    } \cdot ||i - j||_{2} \,\mathrm{d}\lambda
     \label{eq:cost}
 \end{equation}
 
@@ -128,7 +128,7 @@ $j$.
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
         \STATE $(V, E) \leftarrow \Function{Roadmap}(n, d, w, h, O)$
-        \STATE $\Pi \leftarrow \Function{Set}()$
+        \STATE $\Pi \leftarrow \emptyset$
         \STATE $q \leftarrow p$
         \WHILE {$||\Function{Back}(\Pi) - g||_2 > R$}
             \STATE $\pi \leftarrow \Function{SearchGraph}(V, E, R, A, q, g)$
@@ -174,10 +174,7 @@ $j$.
                 \STATE $\Pi_n \leftarrow q$
                 \STATE $c \leftarrow \psi \cdot C_A(q, n) + \omega \cdot D_n$
                 \STATE $D_n \leftarrow D_n + 1$
-                \IF {$w > c$}
-                    \STATE $c \leftarrow w$
-                \ENDIF
-                \STATE $Q \leftarrow \Function{Insert}(Q, n, q)$
+                \STATE $Q \leftarrow \Function{Insert}(Q, n, c)$
             \ENDFOR
         \ENDWHILE
     \end{algorithmic}
@@ -192,7 +189,7 @@ $j$.
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
         \vspace*{1mm}
-        \STATE $S \leftarrow Set()$
+        \STATE $S \leftarrow \emptyset$
         \STATE $N \leftarrow \Function{Neighbours}(V, E, q)$
         \FORALL {$n \in N$}
             \STATE $t \leftarrow ||q - n||_2 / s + q_t$

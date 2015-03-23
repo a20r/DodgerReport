@@ -33,3 +33,19 @@
     \end{algorithmic}
 \end{algorithm}
 
+\section{Metrics}
+
+\begin{equation}
+    \Var{MinDist}(\Pi) = \min_{t \in T} \, \min_{a \in A} \, ||\zeta_a(t) - \Pi(t)||
+    \label{eq:md_metric}
+\end{equation}
+
+\begin{equation}
+    \Var{MaxCost}(\Pi) = \max_{t \in T} \, P_A(\Pi(t))
+    \label{eq:cost_metric}
+\end{equation}
+
+\begin{equation}
+    \Var{AvgCost}(\Pi) = \int_{T} P_A(\Pi(t)) \, \mathrm{d}t
+    \label{eq:avg_cost_metric}
+\end{equation}
