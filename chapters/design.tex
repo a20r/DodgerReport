@@ -1,4 +1,6 @@
 
+\begin{document}
+
 \chapter{Design}
 
 \label{chapter:design}
@@ -29,17 +31,20 @@ y)$.
 % Obstacle equation
 
 \begin{equation}
-    \tilde{\zeta_a}(t) =
+    \zeta_a(t) =
         \begin{cases}
-            \tilde{\zeta_a}(t - \delta t) + \zeta_a'(t) \cdot \delta t + \rho&
-            \text{if } t > 0 \\
-            \zeta^{(0)}_a      & \text{if } t = 0
+            I_a + \mathlarger{\int_{T_a}^{t}} \dot{\zeta_a}(\lambda) \, \mathrm{d}\lambda
+            & \text{if } t \geq T_a \\
+            \tilde{\zeta_a}(t) & \text{if } t < T_a
         \end{cases}
-    \label{eq:obs}
+    \label{eq:obs_pred}
 \end{equation}
 
-Where $\rho \sim \mathcal{U}(-\epsilon, \epsilon)$, $\epsilon > 0$, and
-$\zeta^{(0)}_a$ is the initial position of the obstacle.
+\begin{equation}
+    \tilde{\zeta_a}(t) = I^{(0)}_a + \int_{0}^{t} \dot{\zeta_a}(\lambda)
+    + \rho \, \mathrm{d}\lambda
+    \label{eq:obs_observed}
+\end{equation}
 
 \begin{figure}[h!]
 
@@ -217,3 +222,5 @@ $j$.
         \RETURN $S$
     \end{algorithmic}
 \end{algorithm}
+
+\end{document}

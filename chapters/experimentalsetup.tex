@@ -1,4 +1,6 @@
 
+\begin{document}
+
 \chapter{Experimental Setup}
 
 \label{chapter:experimentalsetup}
@@ -19,7 +21,7 @@
             \STATE $q' \leftarrow q + \delta t \cdot s \cdot \Function{Rot}(\theta)$
             \STATE $p \leftarrow U_{\Var{rep}}(q', O \cup A) + U_{\Var{att}}(q', g)$
             \IF {$p < p_{\Var{min}}$}
-                \STATE $p_{\Var{min}} \leftarrow p$
+               \STATE $p_{\Var{min}} \leftarrow p$
                 \STATE $q_{\Var{min}} \leftarrow q'$
             \ENDIF
             \STATE $\theta \leftarrow \theta + \delta \theta$
@@ -36,16 +38,18 @@
 \section{Metrics}
 
 \begin{equation}
-    \Var{MinDist}(\Pi) = \min_{t \in T} \, \min_{a \in A} \, ||\zeta_a(t) - \Pi(t)||
+    \Var{MinDist}(\Pi) = \min_{t \in \mathcal{T}} \, \min_{a \in A} \, ||\zeta_a(t) - \Pi(t)||
     \label{eq:md_metric}
 \end{equation}
 
 \begin{equation}
-    \Var{MaxCost}(\Pi) = \max_{t \in T} \, P_A(\Pi(t))
+    \Var{MaxCost}(\Pi) = \max_{t \in \mathcal{T}} \, P_A(\Pi(t))
     \label{eq:cost_metric}
 \end{equation}
 
 \begin{equation}
-    \Var{AvgCost}(\Pi) = \int_{T} P_A(\Pi(t)) \, \mathrm{d}t
+    \Var{AvgCost}(\Pi) = \int_{\mathcal{T}} P_A(\Pi(t)) \, \mathrm{d}t
     \label{eq:avg_cost_metric}
 \end{equation}
+
+\end{document}
