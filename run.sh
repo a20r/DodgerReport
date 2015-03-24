@@ -6,4 +6,4 @@ bibtex thesis
 pdflatex thesis
 pdflatex thesis
 
-# texcount.pl essay.tex
+texcount.pl chapters/*.tex

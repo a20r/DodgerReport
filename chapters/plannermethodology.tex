@@ -5,6 +5,21 @@
 
 \label{chapter:plannermethodology}
 
+As with any research project, many different attempts were made to come up with
+a solution to the objectives state in Ch.~\ref{chapter:objectives}. Three
+different techniques were developed in sequence to try and provide a solution
+that best matched the sought behaviour for the planner. The first attempt was a
+simple potential field that would take into account the predicted trajectories
+of the obstacles, and leverage this information to provide safer paths. The
+second attempt included generating a probabilistic roadmap in relative
+space-time and using stock graph search algorithms such as Dijkstra's algorithm
+and Edmond's algorithm to derive low costs paths through the environment. The
+last attempt, and the most successful is a planner that uses a two dimensional
+probabilistic roadmap to sample the search space and then uses Best First
+Search to expand nodes in space-time to determine the minimum cost path through
+the dynamic environment. These three attempts are described individually and
+more detail in this section.
+
 \section{Potential Fields}
 
 \section{Space-time Roadmap}
