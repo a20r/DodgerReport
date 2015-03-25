@@ -106,7 +106,7 @@ The second attempt at devising a solution to the primary objective in
 Ch.~\ref{chapter:objectives} was to create a three dimensional probabilistic
 roadmap that can capture the connectivity of a two dimensional surface in
 space-time. A probabilistic roadmap (PRM) is a method of creating an
-undirected, weighted graph, $(V, E, W)$, that represents the connectivity of
+undirected, weighted graph, $(V, E)$, that represents the connectivity of
 the search space by randomly sampling points and connecting them such that if
 $(i, j) \in E$, then both $i$ and $j$ must not collide with an obstacle, $||i -
 j|| \leq d$ where $d$ indicates the maximum distance away connected nodes can
@@ -117,9 +117,49 @@ location, $(x, y)$, at a certain absolute time $t$, the graph was directed such
 that for an edge, $(i, j)$, $i_t < j_t$, and instead of randomly sampling a
 point in the environment, a node in the graph would be randomly selected and
 propagated forward in time by some random change in time such that the
-constraints for the roadmap are still satisfied.
+constraints for the roadmap are still satisfied. This algorithm is shown more
+formally in Algo.~\ref{algo:diprm}.
 
-% put roadmap construction algorithm here for st-map
+\begin{algorithm}[ht]
+    \caption{$\Function{TemporalRoadmap}(n, d, \delta t, s, p, O, A)$}
+R   \algorithmicrequire{
+        \\$n$: Maximum number of samples
+        \\$d$: Maximum distance between neighbouring nodes
+        \\$O$: Set of obstacles
+    }
+    \\\algorithmicensure{
+        \\An weighted directed graph of points describing where it is possible
+        for the robot to move from its initial configuration.
+    }
+    \label{algo:diprm}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+
+        \STATE $V \leftarrow \{(p, 0)\}$
+        \FOR{$i = 1$ \TO $n$}
+            \STATE $(n, t) \leftarrow \Function{RandomSelection}(V)$
+            \STATE $t' \leftarrow t + \Function{UniformRandom}(\varepsilon, \delta t)$
+            \STATE $\theta \leftarrow \Function{UniformRandom}(0, 2\pi)$
+            \STATE $q \leftarrow n + s \cdot t' \cdot \Function{Rot}(\theta)$
+            \IF{$\bigwedge_{o \in O} \neg \Function{Collision}(o, q)$}
+                \FORALL {$(v, \tau) \in V$}
+                    \IF {$||v - q|| < d \wedge |\tau - t'| < \delta t$}
+                        \IF {$\tau < t'$}
+                            \STATE $E \leftarrow E \cup \{((v, t), (v, t'),
+                            C(v, q, \tau, t', A))\}$
+                        \ELSE
+                            \STATE $E \leftarrow E \cup \{((q, t'), (v, t),
+                            C(q, v, t', \tau, A))\}$
+                        \ENDIF
+                    \ENDIF
+                \ENDFOR
+                \STATE $V \leftarrow V \cup \{(q, t)\}$
+            \ENDIF
+        \ENDFOR
+        \RETURN $(V, E, W)$
+    \end{algorithmic}
+\end{algorithm}
 
 With the generated roadmap, the first thought was to use a graph search
 algorithm such as A*~\cite{astar} or Dijkstra's algorithm~\cite{dijkstra} to
@@ -174,9 +214,10 @@ to use a probabilistic roadmap to capture the connectivity of the two
 dimensional environment and to generate a search tree through the roadmap that
 encodes the temporal information for each point in a tree node and is therefore
 able to account for time-dependent edge costs. This graph search algorithm is a
-temporal analogue to best-first search which tries to expand the best current
-node in a search tree based on some heuristic~\cite{bestfs}.
-
-\label{sec:dodgermethod}.
+temporal analogue of best-first search which tries to expand the best current
+node in a search tree based on some heuristic~\cite{bestfs}. The heuristic in
+this project is to expand the node in the search tree that has the minimum cost
+as defined in Eq.~\ref{eq:cost}. A more complete and in depth description of
+this method is given in Ch.~\ref{chapter:methodology}.
 
 \end{document}

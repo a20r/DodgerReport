@@ -170,6 +170,13 @@ $t$, only once.
     \label{eq:obs_observed}
 \end{equation}
 
+The motion of a dynamic obstacle is described by it's velocity and a starting
+location in order for the planner to be able to continue to predict an
+obstacle's motion when it diverges from its current path. If the obstacle's
+motion was described by parametric equations of it's position, it would not be
+possible to continue to predict where it is going to move once it is no longer
+following its prescribed path.
+
 \section{Planning Algorithm}
 
 \label{sec:design_planner}
