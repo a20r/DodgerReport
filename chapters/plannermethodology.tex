@@ -13,7 +13,7 @@ simple potential field that would take into account the predicted trajectories
 of the obstacles, and leverage this information to provide safer paths. The
 second attempt included generating a probabilistic roadmap in relative
 space-time and using stock graph search algorithms such as Dijkstra's algorithm
-and Edmond's algorithm to derive low costs paths through the environment. The
+and Edmonds' algorithm to derive low costs paths through the environment. The
 last attempt, and the most successful is a planner that uses a two dimensional
 probabilistic roadmap to sample the search space and then uses Best First
 Search to expand nodes in space-time to determine the minimum cost path through
@@ -22,8 +22,146 @@ more detail in this section.
 
 \section{Potential Fields}
 
+Using potential fields was an initial attempt to plan through uncertain dynamic
+environments since they are frequently used to plan around dynamic obstacles
+due to their reactive behaviour. The difference between the standard potential
+field implementations and the one developed for this project was that the
+repulsive obstacle field at a position $(x, y)$ was proportional to the cost
+distribution at $(x, y)$ for a given time interval. This is shown more formally
+in Eq.~\ref{eq:badpotential}.
+
+\begin{equation}
+    U_{\Var{rep}}(p, t_0, t_m, A) = k \cdot P(p_x, p_y, t_0, t_m, A)
+    \label{eq:badpotential}
+\end{equation}
+
+In Eq.~\ref{eq:badpotential}, the function $P$ is defined in Eq.~\ref{eq:prob},
+and $k > 0$ is a constant.  The attractive potential field was kept the same as
+the standard potential field implementation for robotic motion planning as
+shown in Eq.~\ref{eq:badpotentialattr}
+
+\begin{equation}
+    U_{\Var{att}}(p, g) = \frac{c}{||p - g||^2 + \epsilon}
+    \label{eq:badpotentialattr}
+\end{equation}
+
+In Eq.~\ref{eq:badpotentialattr}, $\epsilon$ is a constant such that $0 <
+\epsilon < c$ and is used to ensure that the function does not have a
+singularity and $c$ is a scaling constant such that $c > 0$. The potential
+field planner would use the sum of these two fields to measure the potential
+through the environment in order to eventually reach the goal by successively
+moving to the area within the robot's sensing radius that had the minimal
+potential. Algo.~\ref{algo:pf} describes more formally how the potential field
+planner generates a path through the environment.
+
+\begin{algorithm}[ht]
+
+    \caption{$\Function{PF}(q, g, O, A, R)$}
+
+    \label{algo:pf}
+    \begin{algorithmic}[1]
+        \setcounter{ALC@line}{0}
+        \vspace*{1mm}
+
+        \STATE $q_{\Var{min}} \leftarrow q$
+        \STATE $p_{\Var{min}} \leftarrow \infty$
+        \STATE $\theta \leftarrow 0$
+        \WHILE {$\theta \leq 2\pi$}
+            \STATE $q' \leftarrow q + \delta t \cdot s \cdot
+            \Function{Rot}(\theta)$
+            \STATE $p \leftarrow U_{\Var{rep}}(q', O \cup A)
+            + U_{\Var{att}}(q', g)$
+            \IF {$p < p_{\Var{min}}$}
+               \STATE $p_{\Var{min}} \leftarrow p$
+                \STATE $q_{\Var{min}} \leftarrow q'$
+            \ENDIF
+            \STATE $\theta \leftarrow \theta + \delta \theta$
+            \FORALL {$a \in A$}
+                \STATE $\Function{Step}(a)$
+            \ENDFOR
+        \ENDWHILE
+
+        \IF {$||q_{\Var{min}} - g|| < R$}
+            \RETURN $\{p_{min}\}$
+        \ENDIF
+
+        \RETURN $\{q_{\Var{min}}\} \cup \Function{PF}(q_{\Var{min}}, g, O, A, R)$
+    \end{algorithmic}
+\end{algorithm}
+
+Through some qualitative testing, these types of potential fields were still
+leading the robot into unsafe areas and caused the robot to collide with the
+dynamic obstacles regardless of velocity of the obstacles and the velocity of
+the robot. After some manipulation of the constants used for the repulsive and
+attractive potentials, there was only a nominal improvement which lead the
+author to move towards sampling based motion planning techniques which are
+outlined in Sec.~\ref{sec:stroadmap} and Sec.~\ref{sec:dodgermethod}.
+
 \section{Space-time Roadmap}
 
+\label{sec:stroadmap}
+
+The second attempt at devising a solution to the primary objective in
+Ch.~\ref{chapter:objectives} was to create a three dimensional probabilistic
+roadmap that can capture the connectivity of a two dimensional surface in
+space-time. A probabilistic roadmap (PRM) is a method of creating an
+undirected, weighted graph, $(V, E, W)$, that represents the connectivity of
+the search space by randomly sampling points and connecting them such that if
+$(i, j) \in E$, then both $i$ and $j$ must not collide with an obstacle, $||i -
+j|| \leq d$ where $d$ indicates the maximum distance away connected nodes can
+be from one another, and there must not be a collision with any obstacle along
+the edge from $i$ and $j$~\cite{prm}. For the attempted space-time PRM, each
+node would be a vector, $(x, y, t)$, which represents a two dimensional
+location, $(x, y)$, at a certain absolute time $t$, the graph was directed such
+that for an edge, $(i, j)$, $i_t < j_t$, and instead of randomly sampling a
+point in the environment, a node in the graph would be randomly selected and
+propagated forward in time by some random change in time such that the
+constraints for the roadmap are still satisfied.
+
+% put roadmap construction algorithm here for st-map
+
+With the generated roadmap, the first thought was to use a graph search
+algorithm such as A* or Dijkstra's algorithm to find the path through the
+environment that had the lowest overall weight. The weight for an edge, $(i,
+j)$, defined as the line integral over the cost surface for a given set of
+dynamic obstacles with a time interval of $[i_t, j_t]$. The notion of a cost
+distribution is described in Ch.~\ref{chapter:design} and the formal equation
+for this line integral is given in Eq.~\ref{eq:cost}. This space-time roadmap
+approach yielded mixed results. The robot would sometimes evade the obstacles,
+but with the incidence, the planner would lead the robot directly into a
+collision with a dynamic obstacle. After some testing, it was discovered that
+since graph search algorithms seek to find the path with minimum combined
+weight through the graph, these algorithms are biased to return paths with a
+smaller number of vertices. This is because paths with a larger number of
+vertices will have a higher overall weight. Since shortest path algorithms try
+to minimize this overall weight, paths which may be safer but may take longer
+not be returned by these algorithms.
+
+To overcome this, instead of searching over the entire graph, the search could
+be occur over the minimum spanning tree of the graph.  Since the roadmap is a
+directed graph, Edmonds' algorithm~\cite{edmonds} was used since other minimum
+spanning tree algorithms such as Kruskal's algorithm and Prim's greedy
+algorithm only work on undirected graphs. Using the minimum spanning tree would
+minimize the maximum cost associated with a path from the initial configuration
+to the goal configuration thus moving the robot away from high cost areas in
+space-time. Through qualitative analysis, this approach was shown to still lead
+the robot to high cost areas and even into collisions with obstacles.
+
+This approach using a three dimensional probabilistic roadmap did not work in
+practice regardless of the search algorithm because of the number of nodes that
+need to be sampled in space-time in order for it to be effective.  The roadmap
+indicates where in the environment the robot is able to travel to from a
+starting location in space-time. If the number of nodes is too small the, the
+goal may not even be in the graph, and thus the robot will never reach it.
+Also, the less nodes in the graph the less optimal the generated path is, but
+the more nodes added to the graph, the more computationally difficult it
+becomes to search. Lastly, the main flaw with this approach is that biases the
+sampling to areas that already have a high sample density and therefore may not
+sample nodes in the goal area without having a high number of nodes in the
+graph.
+
 \section{Probabilistic Roadmap With Best First Search}
+
+\label{sec:dodgermethod}.
 
 \end{document}

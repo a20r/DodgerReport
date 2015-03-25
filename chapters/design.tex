@@ -44,9 +44,7 @@ capture system. There is an assumption that for a given interval, $\mathcal{T}
 t_0$ and the lowest cost with the highest uncertainty will be at $t = t_m$.
 Under this assumption, the cost function models how the obstacle may diverge
 from its current trajectory as time increases. With these assumptions, the cost
-function, $P_a:
-\mathbb{R}^2
-\times (\mathbb{R}^+)^2 \rightarrow
+function, $P_a: \mathbb{R}^2 \times (\mathbb{R}^+)^2 \rightarrow
 \mathbb{R}$, represents represents the cost surface for a given
 obstacle within a given time interval. Eq.~\ref{eq:singleprob} formally defines
 the cost function for a single obstacle.
@@ -62,12 +60,19 @@ the cost function for a single obstacle.
 
 In Eq.~\ref{eq:singleprob}, $\mathcal{N}(\mu, \sigma^2, x, y)$ is the
 evaluation of a 3D normal distribution centered at $(\mu_x, \mu_y)$ with a
-variance of $\sigma^2$ at $(x, y)$. This equation models how the uncertainty of
-obstacle trajectory prediction increases over time by increasing the standard
-deviation of the Gaussian distribution as the time increases. Likewise, this
-function multiplies the Gaussian distribution by a factor of $(t_m -
-t)^{\gamma}$ where $\gamma \geq 1$ which gives higher costs to times closer to
-$t_0$.
+variance of $\sigma^2$ at $(x, y)$. Fig.~\ref{fig:normal_3d} shows an example
+of $\mathcal{N}$. This equation models how the uncertainty of obstacle
+trajectory prediction increases over time by increasing the standard deviation
+of the Gaussian distribution as the time increases.  Likewise, this function
+multiplies the Gaussian distribution by a factor of $(t_m - t)^{\gamma}$ where
+$\gamma \geq 1$ which gives higher costs to times closer to $t_0$.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.60\linewidth]{figs/normal_3d}
+    \caption{}
+    \label{fig:normal_3d}
+\end{figure}
 
 A cost function is also needed that can incorporate the cost distributions for
 multiple dynamic obstacles within the environment. The cost function used in
@@ -170,8 +175,8 @@ only computes a value for any given time value, $t$, only once.
 % Graph cost function
 
 \begin{equation}
-    C(i, j, A) = \int^1_0 \exp{\Big(
-        P(x(\lambda), y(\lambda), i_t, j_t, A) + 1 \Big)
+    C(i, j, t_0, t_m, A) = \int^1_0 \exp{\Big(
+        P(x(\lambda), y(\lambda), t_0, t_m, A) + 1 \Big)
     } \cdot ||i - j||_{2} \,\mathrm{d}\lambda
     \label{eq:cost}
 \end{equation}
@@ -233,19 +238,21 @@ $j$.
         \STATE $(V, E) \leftarrow \Function{Roadmap}(n, d, w, h, O)$
         \STATE $\Pi \leftarrow \emptyset$
         \STATE $q \leftarrow p$
+        \STATE $t \leftarrow 0$
         \WHILE {$||\Function{Back}(\Pi) - g||_2 > R$}
-            \STATE $\pi \leftarrow \Function{SearchGraph}(V, E, R, A, q, g)$
-            \FORALL {$i \in \pi$}
+            \STATE $\pi \leftarrow \Function{SearchGraph}(V, E, R, A, q, g, t)$
+            \FORALL {$(i, t') \in \pi$}
                 \STATE $\Pi \leftarrow \Pi \cup \{i\}$
                 \FORALL {$a \in A$}
                     \STATE $\Function{Step}(a)$
                 \ENDFOR
-                \IF {$\bigvee_{a \in A} ||\tilde{\zeta_a}(i_t) -
-                    \zeta_a(i_t)|| > \delta$}
+                \IF {$\bigvee_{a \in A} ||\tilde{\zeta_a}(t') -
+                    \zeta_a(t')|| > \delta$}
                     \FORALL {$a \in A$}
                         \STATE $\Function{Update}(\zeta_a, \tilde{\zeta_a})$
                     \ENDFOR
                     \STATE $q \leftarrow i$
+                    \STATE $t \leftarrow t'$
                     \STATE $\textbf{break}$
                 \ENDIF
             \ENDFOR
@@ -256,7 +263,7 @@ $j$.
 
 % Algorithm to search the graph
 \begin{algorithm}[ht]
-    \caption{$\Function{SearchGraph}(V, E, R, A, p, g)$}
+    \caption{$\Function{SearchGraph}(V, E, R, A, p, g, T)$}
     % \algorithmicrequire{}
     % \\\algorithmicensure{}
     \label{algo:search}
@@ -265,45 +272,29 @@ $j$.
         \vspace*{1mm}
         \STATE $Q \leftarrow \Function{PriorityQueue}()$
         \STATE $D \leftarrow \Function{Dictionary}()$
-        \STATE $\Pi \leftarrow \Function{Dictionary}()$
-        \STATE $\Function{Insert}(Q, p, 0)$
+        \STATE $\mathcal{P} \leftarrow \Function{Dictionary}()$
+        \STATE $\Function{Insert}(Q, p, T)$
         \WHILE {$\neg \Function{Empty}(Q)$}
-            \STATE $q, w \leftarrow \Function{Pop}(Q)$
-            \IF{$||q - g||_2 \leq R$}
-                \RETURN $\Function{BacktrackPath}(p, g, \Pi)$
+            \STATE $(q, t) \leftarrow \Function{Pop}(Q)$
+            \IF{$||q - g|| \leq R$}
+                \RETURN $\Function{BacktrackPath}(p, g, \mathcal{P})$
             \ENDIF
-            \STATE $N \leftarrow \Function{GetTemporalNeighbours}(V, E, q)$
-            \FORALL{$n \in N$}
-                \STATE $\Pi_n \leftarrow q$
-                \STATE $c \leftarrow \psi \cdot C_A(q, n) + \omega \cdot D_n$
-                \STATE $D_n \leftarrow D_n + 1$
-                \STATE $Q \leftarrow \Function{Insert}(Q, n, c)$
+            \STATE $S \leftarrow \emptyset$
+            \STATE $N \leftarrow \Function{Neighbours}(V, E, q)$
+            \FORALL {$n \in N$}
+                \STATE $t' \leftarrow ||q - n|| / s + t$
+                \STATE $\mathcal{P}_{(n, t')} \leftarrow (q, t)$
+                \STATE $c \leftarrow \psi \cdot C(q, n, t, t', A) + \omega \cdot D_{\eta}$
+                \STATE $D_{n} \leftarrow D_{n} + 1$
+                \STATE $Q \leftarrow \Function{Insert}(Q, (n, t'), c)$
             \ENDFOR
         \ENDWHILE
     \end{algorithmic}
 \end{algorithm}
 
-% Gets the neighbours in space-time
-\begin{algorithm}[ht]
-    \caption{$\Function{GetTemporalNeighbours}(V, E, q)$}
-    % \algorithmicrequire{}
-    % \\\algorithmicensure{}
-    \label{algo:neighbours}
-    \begin{algorithmic}[1]
-        \setcounter{ALC@line}{0}
-        \vspace*{1mm}
-        \STATE $S \leftarrow \emptyset$
-        \STATE $N \leftarrow \Function{Neighbours}(V, E, q)$
-        \FORALL {$n \in N$}
-            \STATE $t \leftarrow ||q - n||_2 / s + q_t$
-            \STATE $S \leftarrow S \cup \{(n_x, n_y, t)\}$
-        \ENDFOR
-    \end{algorithmic}
-\end{algorithm}
-
 % Given a parent dictionary, this returns the backtracked path
 \begin{algorithm}[ht]
-    \caption{$\Function{BacktrackPath}(p, g, \Pi)$}
+    \caption{$\Function{BacktrackPath}(p, g, \mathcal{P})$}
     % \algorithmicrequire{}
     % \\\algorithmicensure{}
     \label{algo:backtrack}
@@ -312,9 +303,9 @@ $j$.
         \vspace*{1mm}
         \STATE $q \leftarrow g$
         \STATE $S \leftarrow \Function{Stack}()$
-        \WHILE {$\Pi_q \neq p$}
+        \WHILE {$\mathcal{P}_q \neq p$}
             \STATE $S \leftarrow \Function{Push}(S, q)$
-            \STATE $q \leftarrow \Pi_q$
+            \STATE $(q, t) \leftarrow \mathcal{P}_{q, t})$
         \ENDWHILE
         \STATE $S \leftarrow \Function{Push}(S, p)$
         \RETURN $S$

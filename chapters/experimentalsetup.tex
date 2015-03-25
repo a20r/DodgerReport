@@ -5,40 +5,11 @@
 
 \label{chapter:experimentalsetup}
 
-\begin{algorithm}[ht]
-
-    \caption{$\Function{PF}(q, g, O, A, R)$}
-
-    \label{algo:pf}
-    \begin{algorithmic}[1]
-        \setcounter{ALC@line}{0}
-        \vspace*{1mm}
-
-        \STATE $q_{\Var{min}} \leftarrow q$
-        \STATE $p_{\Var{min}} \leftarrow \infty$
-        \STATE $\theta \leftarrow 0$
-        \WHILE {$\theta \leq 2\pi$}
-            \STATE $q' \leftarrow q + \delta t \cdot s \cdot \Function{Rot}(\theta)$
-            \STATE $p \leftarrow U_{\Var{rep}}(q', O \cup A) + U_{\Var{att}}(q', g)$
-            \IF {$p < p_{\Var{min}}$}
-               \STATE $p_{\Var{min}} \leftarrow p$
-                \STATE $q_{\Var{min}} \leftarrow q'$
-            \ENDIF
-            \STATE $\theta \leftarrow \theta + \delta \theta$
-        \ENDWHILE
-
-        \IF {$||q_{\Var{min}} - g|| < R$}
-            \RETURN $\{p_{min}\}$
-        \ENDIF
-
-        \RETURN $\{q_{\Var{min}}\} \cup \Function{PF}(q_{\Var{min}}, g, O, R)$
-    \end{algorithmic}
-\end{algorithm}
-
 \section{Metrics}
 
 \begin{equation}
-    \Var{MinDist}(\Pi) = \min_{t \in \mathcal{T}} \, \min_{a \in A} \, ||\zeta_a(t) - \Pi(t)||
+    \Var{MinDist}(\Pi) = \min_{t \in \mathcal{T}} \, \min_{a \in A} \,
+    ||\zeta_a(t) - \Pi(t)||
     \label{eq:md_metric}
 \end{equation}
 
