@@ -55,4 +55,14 @@ diagram of this tool-chain is shown in Fig.~\ref{fig:software}.
 
 \end{figure}
 
+By separating the visualization code completely from the planner code, the
+software is more easily portable to different visualization frameworks and
+ensures that the user does not need to have a certain graphical software or ROS
+installed for the software to be able to compile. This allowed the planner code
+to be entirely self contained and simple to compile with a provided CMake file.
+Likewise, this design decision in the implementation allows the generated paths
+to be saved and either analysed or visualized at another time. Also, since the
+planner had no dependencies, experiments could be run on the servers provided
+without needing root access.
+
 \end{document}
