@@ -158,9 +158,11 @@ the same velocity equation. This means that the obstacle will not exhibit
 random motion around its specified path, but rather is able to diverge
 completely. Also, by adding the random variable to the velocity equation during
 integration, the obstacle will not "jump" to a new location, but will gradually
-diverge. The definition of $\tilde{\zeta_a}$ is shown in
-Eq.~\ref{eq:obs_observed}. For this equation, it is assumed that the function
-only computes a value for any given time value, $t$, only once.
+diverge and because it is analogous to the way the random variable was used
+during the numerical integration in the code. The definition of
+$\tilde{\zeta_a}$ is shown in Eq.~\ref{eq:obs_observed}.  For this equation, it
+is assumed that the function only computes a value for any given time value,
+$t$, only once.
 
 \begin{equation}
     \tilde{\zeta_a}(t) = I_a + \int_{0}^{t} \dot{\zeta_a}(\lambda)
