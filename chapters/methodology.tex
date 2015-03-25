@@ -28,7 +28,16 @@ updated throughout the execution of the algorithm and are used to determine
 when it is appropriate for the algorithm replan and find a new path through the
 environment using more up to date information. This is explained in
 Sec.~\ref{sec:design_planner}. The variables $\xi$ and $T$ are initially set to
-$I$ and $0$ respectively.
+$I$ and $0$ respectively. It is assumed that the robot has access to this
+information about the dynamic obstacles and will use it to safely around them.
+Information such as the initial configuration and the velocity equation for
+each dynamic obstacle are assumed to be determined by an external system that
+is either using a machine learning technique to deduce these properties by
+using information about where the dynamic obstacle has been before or by an
+external planning system such as in a warehouse that is commanding the
+velocities and configurations of these dynamic obstacles. This is the same
+assumption as that made by Phillips et al~\cite{sipp} and Narayanan et
+al~\cite{asipp}.
 
 \subsection{Cost Function}
 

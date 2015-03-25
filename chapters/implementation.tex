@@ -5,4 +5,54 @@
 
 \label{chapter:Implementation}
 
+\section{Initial}
+
+Due to the ease of development and the author's experience with the language,
+Python was chosen as the initial language for the implementation. All three
+attempts described in Ch.~\ref{chapter:design}, were implemented and a suite of
+tests scripts and visualization mechanisms were created in order to
+incrementally assess how each planner was behaving. However after the
+implementation was completed for the final design described in
+Sec.~\ref{sec:finaldesign}, it was discovered that Python could not produce
+solution paths (without replanning) through dynamic environments in a real-time
+scenario. Since Python could not search the graph within an acceptable amount
+of time, it could be only used for \emph{a priori} planning and therefore could
+not be used in stochastic environments in which replanning would be needed. Due
+to this drawback, the author decided to rewrite the entire implementation in
+C++. Since this initial attempt is complete, it is publicly available
+at~\cite{racer}.
+
+\section{Final}
+
+The final implementation was written in C++ because of the tremendous speed
+improvement which made planning in real-time viable. Due to the object oriented
+structure of C++, the planner and the associated data structures were
+encapsulated by classes which made it very easy for people to use the code as
+an API. While designing the software, effort was put into making the code
+easily usable by other people who are not necessarily experts in robotics or
+motion planning. The system has an easy import mechanism and several examples
+on how to use the different planners that have been implemented.
+
+In order to visualize the paths that the planner has generated, the C++ code
+exports the path of the robot and the dynamic obstacles to JSON and a Python
+script then reads and parses the generated JSON and displays the paths using
+either Matplotlib or RViz. Matplotlib is an open source library for creating
+plots from data~\cite{matplotlib}. It is very similar to Matlab or Mathematica
+except it runs natively in Python. RViz is a core component of the Robotic
+Operating System (ROS) which can render dynamic scenes in three dimensions and
+can visualize native geometrical and navigation messages from ROS~\cite{ros}. A
+diagram of this tool-chain is shown in Fig.~\ref{fig:software}.
+
+% change the below figure
+
+\begin{figure}[h!]
+
+    \includegraphics[width=1\linewidth]{figs/filler}
+
+    \caption{}
+
+    \label{fig:software}
+
+\end{figure}
+
 \end{document}
