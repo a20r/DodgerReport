@@ -20,7 +20,7 @@ safety without having to account for the motion of the obstacles. This metric
 is defined formally in Eq.~\ref{eq:md_metric}.
 
 \begin{equation}
-    \Var{MinDist}(\Pi) = \min_{t \in \mathcal{T}} \, \min_{a \in A} \,
+    \Var{MinDist}(\Pi, A) = \min_{t \in \mathcal{T}} \, \min_{a \in A} \,
     ||\zeta_a(t) - \Pi(t)||
     \label{eq:md_metric}
 \end{equation}
@@ -36,13 +36,26 @@ obstacle. The robot could have a smaller cost over its path even if it moved
 near an obstacle than a robot that was farther away from an obstacle but moved
 directly into its trajectory.
 
+Another metric used to compute the safety of a path is the maximum cost
+incurred by the robot along the path. This is what the planner described in
+Sec.~\ref{sec:design_planner} is trying to minimize. This metric describes how
+risky a certain path is by determining the likelihood that the robot's path
+would intersect with the trajectory of a dynamic obstacle. A formal definition
+of this metric is shown in Eq.~\ref{eq:cost_metric}.
+
 \begin{equation}
-    \Var{MaxCost}(\Pi) = \max_{t \in \mathcal{T}} \, P_A(\Pi(t))
+    \Var{MaxCost}(\Pi, A) = \max_{t \in \mathcal{T}} \, P(\Pi(t), A)
     \label{eq:cost_metric}
 \end{equation}
 
+Since the potential field planner implementation that is used to compare with
+the planner created in this work does not utilize the information given about
+the cost distribution associated with dynamic obstacles, this metric also
+indicates how access to this information can contribute to generating safer
+paths through dynamic environments.
+
 \begin{equation}
-    \Var{AvgCost}(\Pi) = \int_{\mathcal{T}} P_A(\Pi(t)) \, \mathrm{d}t
+    \Var{AvgCost}(\Pi, A) = \int_{\mathcal{T}} P(\Pi(t), A) \, \mathrm{d}t
     \label{eq:avg_cost_metric}
 \end{equation}
 
