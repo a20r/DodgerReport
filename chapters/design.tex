@@ -96,7 +96,7 @@ dynamic obstacles regardless of velocity of the obstacles and the velocity of
 the robot. After some manipulation of the constants used for the repulsive and
 attractive potentials, there was only a nominal improvement which lead the
 author to move towards sampling based motion planning techniques which are
-outlined in Sec.~\ref{sec:stroadmap} and Sec.~\ref{sec:dodgermethod}.
+outlined in Sec.~\ref{sec:stroadmap} and Sec.~\ref{sec:finaldesign}.
 
 \section{Space-time Roadmap}
 
@@ -105,24 +105,25 @@ outlined in Sec.~\ref{sec:stroadmap} and Sec.~\ref{sec:dodgermethod}.
 The second attempt at devising a solution to the primary objective in
 Ch.~\ref{chapter:objectives} was to create a three dimensional probabilistic
 roadmap that can capture the connectivity of a two dimensional surface in
-space-time. A probabilistic roadmap (PRM) is a method of creating an
-undirected, weighted graph, $(V, E)$, that represents the connectivity of
-the search space by randomly sampling points and connecting them such that if
-$(i, j) \in E$, then both $i$ and $j$ must not collide with an obstacle, $||i -
-j|| \leq d$ where $d$ indicates the maximum distance away connected nodes can
-be from one another, and there must not be a collision with any obstacle along
-the edge from $i$ and $j$~\cite{prm}. For the attempted space-time PRM, each
-node would be a vector, $(x, y, t)$, which represents a two dimensional
-location, $(x, y)$, at a certain absolute time $t$, the graph was directed such
-that for an edge, $(i, j)$, $i_t < j_t$, and instead of randomly sampling a
-point in the environment, a node in the graph would be randomly selected and
-propagated forward in time by some random change in time such that the
-constraints for the roadmap are still satisfied. This algorithm is shown more
-formally in Algo.~\ref{algo:diprm}.
+space-time. A spatio-temporal probabilistic roadmap (PRM) is a method of
+creating an directed, weighted graph, $(V, E)$, that represents the
+spatio-temporal connectivity of the search space by randomly sampling points
+and connecting them such that if $((i, t), (j, t')) \in E$, then both $i$ and
+$j$ must not collide with an obstacle at times $t$ and $t'$ respectively, $||i
+- j|| \leq d$ where $d$ indicates the maximum distance away connected nodes can
+be from one another, there must not be a collision with any obstacle along the
+edge from $i$ and $j$ in the time interval $[t, t']$, $|t - t'| < \delta t$,
+and $t < t'$.  For the attempted space-time PRM, each node would be a vector,
+$(x, y, t)$, which represents a two dimensional location, $(x, y)$, at a
+certain absolute time $t$, and instead of randomly sampling a point in the
+environment, a node in the graph would be randomly selected and propagated
+forward in time by some random change in time such that the constraints for the
+roadmap are still satisfied.  This algorithm is shown more formally in
+Algo.~\ref{algo:diprm}.
 
 \begin{algorithm}[ht]
-    \caption{$\Function{TemporalRoadmap}(n, d, \delta t, s, p, O, A)$}
-R   \algorithmicrequire{
+    \caption{$\Function{TemporalRoadmap}(N, d, \delta t, s, p, O, A)$}
+    \algorithmicrequire{
         \\$n$: Maximum number of samples
         \\$d$: Maximum distance between neighbouring nodes
         \\$O$: Set of obstacles
@@ -137,7 +138,7 @@ R   \algorithmicrequire{
         \vspace*{1mm}
 
         \STATE $V \leftarrow \{(p, 0)\}$
-        \FOR{$i = 1$ \TO $n$}
+        \FOR{$i = 1$ \TO $N$}
             \STATE $(n, t) \leftarrow \Function{RandomSelection}(V)$
             \STATE $t' \leftarrow t + \Function{UniformRandom}(\varepsilon, \delta t)$
             \STATE $\theta \leftarrow \Function{UniformRandom}(0, 2\pi)$

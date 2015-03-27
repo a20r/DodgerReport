@@ -24,30 +24,38 @@ at~\cite{racer}.
 
 \section{Final}
 
-The final implementation was written in C++ because of the tremendous speed
+The final implementation was written in C++ due to the tremendous speed
 improvement which made planning in real-time viable. Due to the object oriented
 structure of C++, the planner and the associated data structures were
-encapsulated by classes which made it very easy for people to use the code as
-an API. While designing the software, effort was put into making the code
+encapsulated in classes which made it very easy for people to use the code as
+an API. While designing the software, extra effort was put into making the code
 easily usable by other people who are not necessarily experts in robotics or
-motion planning. The system has an easy import mechanism and several examples
+motion planning.  The system has an easy import mechanism and several examples
 on how to use the different planners that have been implemented.
 
 In order to visualize the paths that the planner has generated, the C++ code
-exports the path of the robot and the dynamic obstacles to JSON and a Python
-script then reads and parses the generated JSON and displays the paths using
-either Matplotlib or RViz. Matplotlib is an open source library for creating
-plots from data~\cite{matplotlib}. It is very similar to Matlab or Mathematica
-except it runs natively in Python. RViz is a core component of the Robotic
-Operating System (ROS) which can render dynamic scenes in three dimensions and
-can visualize native geometrical and navigation messages from ROS~\cite{ros}. A
-diagram of this tool-chain is shown in Fig.~\ref{fig:software}.
+can exports the paths of the robot and the dynamic obstacles to a JSON file and
+a Python script then can read and parse the generated JSON and display the
+paths using either Matplotlib or RViz. Matplotlib is an open source library for
+creating plots from data~\cite{matplotlib}. It is very similar to Matlab or
+Mathematica except it runs natively in Python. RViz is a core component of the
+Robotic Operating System (ROS) which can render dynamic scenes in three
+dimensions and can visualize native geometrical and navigation messages from
+ROS~\cite{ros}.  Since the paths are exported to JSON, a standard format with
+parsers in many languages, third party software can be developed that can parse
+the generated JSON file and analysis or visualized the generated paths.
+Likewise, the \Name library can be imported by a third party program to control
+robots from the generated paths or to visualize the paths using other
+visualization tools such as OpenGL. A diagram of this tool-chain is shown in
+Fig.~\ref{fig:software}.
 
 % change the below figure
 
 \begin{figure}[h!]
 
-    \includegraphics[width=1\linewidth]{figs/filler}
+    \centering
+
+    \includegraphics[width=0.8\linewidth]{figs/toolchain}
 
     \caption{}
 
@@ -58,11 +66,13 @@ diagram of this tool-chain is shown in Fig.~\ref{fig:software}.
 By separating the visualization code completely from the planner code, the
 software is more easily portable to different visualization frameworks and
 ensures that the user does not need to have a certain graphical software or ROS
-installed for the software to be able to compile. This allowed the planner code
-to be entirely self contained and simple to compile with a provided CMake file.
+installed for the software to be able to compile and use the library. This
+allowed the planner code to be entirely self contained and simple to compile
+with a provided CMake file which compiles the C++ code into a static library.
 Likewise, this design decision in the implementation allows the generated paths
-to be saved and either analysed or visualized at another time. Also, since the
+to be saved and either analysed or visualized at another time.  Also, since the
 planner had no dependencies, experiments could be run on the servers provided
-without needing root access.
+without needing root access.  This code is also made publicly available
+at~\cite{dodger}.
 
 \end{document}
