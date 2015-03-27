@@ -226,7 +226,8 @@ number of samples, $n$, and the maximum distance between nodes, $d$. By
 increasing the number of samples, the density of samples increases and
 therefore the average degree for a node in the graph increases. Likewise, if
 the maximum distance between nodes increases, so does the average degree for a
-node in the graph.
+node in the graph. Pseudocode is provided for constructing a probabilistic
+roadmap in Algo.~\ref{algo:prm}.
 
 % Algorithm to generate a roadmap
 \begin{algorithm}[ht]
@@ -254,7 +255,8 @@ node in the graph.
 
         \FORALL{$i \in V$}
             \FORALL{$j \in V$}
-                \IF{$i \neq j \wedge ||i - j|| \leq d$}
+            \IF{$i \neq j \wedge ||i - j|| \leq d \wedge
+                \bigwedge_{o \in O} \neg \Function{Collision}(o, i, j)$}
                     \STATE $E \leftarrow E \cup \{(i, j)\}$
                 \ENDIF
             \ENDFOR
@@ -262,6 +264,16 @@ node in the graph.
         \RETURN $(V,E)$
     \end{algorithmic}
 \end{algorithm}
+
+% text below is most likely redundant, like this comment
+
+In Algo.~\ref{algo:prm}, first at most $n$ points are sampled and added to the
+set of vertices, $V$, if and only if there is not a collision with any of the
+static obstacles. Essentially the Cartesian square of $V$ is iterated over and
+any two points that are not the same, whose distance is less than $d$, and if
+there is no collision along the edge between these two points are added to the
+edge set, $E$. Finally, the vertices and edges are returned as a tuple
+representing the graph.
 
 \subsection{Searching the Graph}
 
