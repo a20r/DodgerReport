@@ -7,11 +7,34 @@
 
 \section{Metrics}
 
+In order to quantify the safety of a given path $\Pi$, three metrics were
+devised. These metrics need to be used together to measure the safety of a path
+and each represent a component of what it means for a path to be "safe". The
+first metric is the most straightforward and what is probably the first metric
+to come to mind, the minimum distance to any dynamic obstacle at any given
+time. This metric represents for a given path, what was the closest the robot
+came to coming into contact with a dynamic obstacle. Since collisions are more
+likely to occur as the robot approaches an obstacle due to the uncertainty in
+its motion, this metric serves to provide a simple way of quantifying the
+safety without having to account for the motion of the obstacles. This metric
+is defined formally in Eq.~\ref{eq:md_metric}.
+
 \begin{equation}
     \Var{MinDist}(\Pi) = \min_{t \in \mathcal{T}} \, \min_{a \in A} \,
     ||\zeta_a(t) - \Pi(t)||
     \label{eq:md_metric}
 \end{equation}
+
+In Eq.~\ref{eq:md_metric}, $\Pi$ is the path of the robot, $\mathcal{T}$ is the
+time interval for the path, and $A$ is the set of dynamic obstacles in the
+scene. Since this metric does not account for the motion of obstacles, it
+cannot be used as the sole quantification of safety. For example, if the robot
+moved near a dynamic obstacle, but was moving in the opposite direction of the
+obstacle, the path taken by the robot would still be safe, because there would
+be a smaller chance of the robot actually coming into contact with the
+obstacle. The robot could have a smaller cost over its path even if it moved
+near an obstacle than a robot that was farther away from an obstacle but moved
+directly into its trajectory.
 
 \begin{equation}
     \Var{MaxCost}(\Pi) = \max_{t \in \mathcal{T}} \, P_A(\Pi(t))
