@@ -179,10 +179,15 @@ $t$, only once.
     \label{eq:obs_observed}
 \end{equation}
 
+By increasing the level of stochasticity, $\epsilon$, for a given dynamic
+obstacle, it will be more likely to diverge from its current path. This means
+that the uncertainty of a given dynamic obstacle can be parametrized by its
+value for $\epsilon$.
+
 The motion of a dynamic obstacle is described by it's velocity and a starting
 location in order for the planner to be able to continue to predict an
 obstacle's motion when it diverges from its current path. If the obstacle's
-motion was described by parametric equations of it's position, it would not be
+motion was described by parametric equations of its position, it would not be
 possible to continue to predict where it is going to move once it is no longer
 following its prescribed path.
 
@@ -190,7 +195,38 @@ following its prescribed path.
 
 \label{sec:design_planner}
 
+The planning algorithm for Dodger has three major components. First, a two
+dimensional probabilistic roadmap is constructed over the search space in order
+to capture the spatial connectivity of the environment. The planner then uses a
+best-first (BestFS) graph search algorithm to determine the safest path from
+the initial position to the goal position by creating a temporal search tree
+through the graph in order to account for time-dependent edge costs. Once the
+robot has an initial path to follow, it will incrementally pursue this path
+whilst updating its information about the location of the dynamic obstacles. If
+any of the obstacles deviate from their predicted path, the planner will
+generate a new path (replan) for the robot using this information. These three
+components allow the planner to reduce the number of samples over time by
+reusing the same two dimensional roadmap and allows the planner to account for
+dynamic obstacles with stochastic motion by replanning. These are improvements
+to the first sampling based technique described in Sec.~\ref{sec:stroadmap}
+
 \subsection{Building the Roadmap}
+
+The first component of the planning algorithm is the underlying two dimensional
+roadmap which represents the spatial connectivity of the environment. This
+roadmap is constructed using a standard variant of the probabilistic roadmap
+algorithm created by Kavraki et al~\cite{prm}. A probabilistic roadmap is a
+undirected graph, $(V, E)$, created by randomly sampling $n$ configurations in
+the configuration space of the robot and connecting them such that if $(i, j)
+\in E$, then $||i - j|| < d$, both $i$ and $j$ are not within any of the static
+obstacles, and there is no collision along the geometric edge from $i$ to $j$.
+In this work the configuration space is $\mathbb{R}^2$ and the edge between two
+nodes is a straight line. The complexity of the graph is parametrized by the
+number of samples, $n$, and the maximum distance between nodes, $d$. By
+increasing the number of samples, the density of samples increases and
+therefore the average degree for a node in the graph increases. Likewise, if
+the maximum distance between nodes increases, so does the average degree for a
+node in the graph.
 
 % Algorithm to generate a roadmap
 \begin{algorithm}[ht]
@@ -209,18 +245,17 @@ following its prescribed path.
         \setcounter{ALC@line}{0}
         \vspace*{1mm}
 
-        \FOR{$i = 1$ \TO $n$}
+        \FOR{$k = 1$ \TO $n$}
             \STATE $q \leftarrow \Function{RandomPoint2D}(w, h)$
             \IF{$\bigwedge_{o \in O} \neg \Function{Collision}(o, q)$}
                 \STATE $V \leftarrow V \cup \{q\}$
             \ENDIF
         \ENDFOR
 
-        \FORALL{$q_i \in V$}
-            \FORALL{$q_j \in V$}
-                \IF{$q_i \neq q_j \wedge ||q_i - q_j|| \leq d$}
-                    \STATE $E \leftarrow E \cup \{(q_i, q_j)\}$
-                    % \STATE $E \leftarrow E \cup \{(q_j, q_i)\}$
+        \FORALL{$i \in V$}
+            \FORALL{$j \in V$}
+                \IF{$i \neq j \wedge ||i - j|| \leq d$}
+                    \STATE $E \leftarrow E \cup \{(i, j)\}$
                 \ENDIF
             \ENDFOR
         \ENDFOR

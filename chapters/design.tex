@@ -105,20 +105,20 @@ outlined in Sec.~\ref{sec:stroadmap} and Sec.~\ref{sec:finaldesign}.
 The second attempt at devising a solution to the primary objective in
 Ch.~\ref{chapter:objectives} was to create a three dimensional probabilistic
 roadmap that can capture the connectivity of a two dimensional surface in
-space-time. A spatio-temporal probabilistic roadmap (PRM) is a method of
-creating an directed, weighted graph, $(V, E)$, that represents the
-spatio-temporal connectivity of the search space by randomly sampling points
-and connecting them such that if $((i, t), (j, t')) \in E$, then both $i$ and
-$j$ must not collide with an obstacle at times $t$ and $t'$ respectively, $||i
-- j|| \leq d$ where $d$ indicates the maximum distance away connected nodes can
-be from one another, there must not be a collision with any obstacle along the
-edge from $i$ and $j$ in the time interval $[t, t']$, $|t - t'| < \delta t$,
-and $t < t'$.  For the attempted space-time PRM, each node would be a vector,
-$(x, y, t)$, which represents a two dimensional location, $(x, y)$, at a
-certain absolute time $t$, and instead of randomly sampling a point in the
-environment, a node in the graph would be randomly selected and propagated
-forward in time by some random change in time such that the constraints for the
-roadmap are still satisfied.  This algorithm is shown more formally in
+space-time. A spatio-temporal probabilistic roadmap (PRM) is a directed,
+weighted graph, $(V, E)$, that represents the spatio-temporal connectivity of
+the search space by randomly sampling points and connecting them such that if
+$((i, t), (j, t')) \in E$, then both $i$ and $j$ must not collide with an
+obstacle at times $t$ and $t'$ respectively, $||i - j|| \leq d$ where $d$
+indicates the maximum distance away connected nodes can be from one another,
+there must not be a collision with any obstacle along the edge from $i$ and $j$
+in the time interval $[t, t']$, $|t - t'| < \delta t$, and $t < t'$~\cite{prm,
+stprm}.  For the attempted space-time PRM, each node would be a vector, $(x, y,
+t)$, which represents a two dimensional location, $(x, y)$, at a certain
+absolute time $t$, and instead of randomly sampling a point in the environment,
+a node in the graph would be randomly selected and propagated forward in time
+by some random change in time such that the constraints for the roadmap are
+still satisfied.  This algorithm is shown more formally in
 Algo.~\ref{algo:diprm}.
 
 \begin{algorithm}[ht]
