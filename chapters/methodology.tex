@@ -61,7 +61,7 @@ defines the cost function for a single obstacle.
 % Single agent PDF
 
 \begin{equation}
-    P_a(x, y, t_0, t_m) = \int^{t_m}_{t_0}
+    P_a(x, y, t_0, t_m) = \frac{1}{t_m} \cdot \int^{t_m}_{t_0}
     \mathcal{N}(\zeta_a(t), \alpha \cdot (t - t_0)^2 + \beta, x, y) \cdot
     (t_m - t)^{\gamma} \,\mathrm{d}t
     \label{eq:singleprob}
@@ -273,7 +273,15 @@ static obstacles. Essentially the Cartesian square of $V$ is iterated over and
 any two points that are not the same, whose distance is less than $d$, and if
 there is no collision along the edge between these two points are added to the
 edge set, $E$. Finally, the vertices and edges are returned as a tuple
-representing the graph.
+representing the graph. Fig.~\ref{fig:prm} shows a constructed probabilistic
+roadmap with 1000 nodes.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/roadmap}
+    \caption{}
+    \label{fig:prm}
+\end{figure}
 
 \subsection{Searching the Graph}
 
@@ -341,6 +349,21 @@ $j$.
         \RETURN $S$
     \end{algorithmic}
 \end{algorithm}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.32\linewidth]{figs/tree_0}
+    \includegraphics[width=0.32\linewidth]{figs/tree_2}
+    \includegraphics[width=0.32\linewidth]{figs/tree_4} \\
+    \includegraphics[width=0.32\linewidth]{figs/tree_6}
+    \includegraphics[width=0.32\linewidth]{figs/tree_8}
+    \includegraphics[width=0.32\linewidth]{figs/tree_10} \\
+    \includegraphics[width=0.32\linewidth]{figs/tree_12}
+    \includegraphics[width=0.32\linewidth]{figs/tree_14}
+    \includegraphics[width=0.32\linewidth]{figs/tree_15}
+    \caption{}
+    \label{fig:tree}
+\end{figure}
 
 \subsection{Replanning}
 
