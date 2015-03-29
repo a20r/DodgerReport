@@ -7,7 +7,49 @@
 
 \section{Design}
 
+In order to quantify the performance of the developed planner and to judge how
+well it performs, experiments needed to be run that can determine the degree of
+safety present in the generated paths and how long it takes to generate these
+paths. To gather this data, three different scenes were created with differing
+number dynamic obstacles with different trajectories. The independent
+variables, or parameters, for each scene consisted of the amount of noise,
+$\epsilon$ for the dynamic obstacles and the speed of the robot, $s$. For the
+experiments, a given value of $\epsilon$ is the same for all of the dynamic
+obstacles in the scene. The amount of noise ranges from $0.002$ to $0.01$ with
+an increment of $0.002$ and the speed ranges from $1.0$ to $4.5$ meters per
+second with an increment of $0.5$ meters per second. Due to the stochasticity
+of the planner and the dynamic obstacles, each set of parameters for each scene
+was run 20 times. The values for each metric recorded is averaged and the
+standard deviation for each set of parameters for each scene is presented.
+
+In order to judge how the developed planner compares to a standard algorithm
+developed to plan in stochastic dynamic environments, a slight variant to the
+potential fields planner described in Algo.~\ref{algo:pf} was implemented. The
+difference is that the implemented potential fields planner used a different
+repulsive potential function described in Eq.~\ref{eq:betterrep}.
+
+\begin{equation}
+    U_{\Var{rep}}(p, t, A) = \max_{a \in A} \,
+    \frac{k}{||\tilde{\zeta_a}(t) - g||^2 + \varepsilon}
+    \label{eq:betterrep}
+\end{equation}
+
+In Eq.~\ref{eq:betterrep}, $k$ is a scaling constant where $k > 0$, and
+$\varepsilon$ is constant where $0 < \varepsilon < k$ that ensures that the
+function does not exhibit a singularity. This variant in the potential fields
+ensures that the planner has no information about the motion of the obstacles
+and can thus be used to compare how this information can benefit a planner.
+Also, since this planner is not sampling based, it can be used to see how a
+complete sampling based planner can be more or less effective. The results from
+this experimental setup are described in Ch.~\ref{chapter:results}.
+
 \section{Metrics}
+
+To quantify the performance of the planners, four metrics are used, three to
+measure the safety and one for computational time. Along with these metrics,
+the standard deviation is collected for each scene and set of parameters in
+order to gauge the reliability of the planner under different circumstances.
+These metrics are described in the sections below.
 
 \subsection{Safety}
 
@@ -95,5 +137,14 @@ replanning, the computational time also represents how long it would take for
 the robot to execute the path because it is replanning in real-time.
 
 \subsection{Variance}
+
+For each set of parameters, the experiments were conducted multiple times due
+to the stochasticity of the dynamic obstacles and the planner. The standard
+deviation for each metric and each set of parameters were recorded and used to
+indicate how the noise injected into the trajectories of the dynamic obstacles
+and the speed of the planner affect the variance in the results. This metric
+provides an indication of how consistent the planners will be for different
+sets of parameters and can contribute to judging how well each planner will
+work in a real world scenario over time.
 
 \end{document}

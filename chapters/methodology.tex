@@ -20,24 +20,24 @@ A dynamic obstacle is defined as a 5-tuple, $a = (I, \dot{\zeta},
 $\dot{\zeta}$ is a function, $\dot{\zeta}: \mathbb{R}^+ \rightarrow
 \mathbb{R}^2$, representing the velocity of the obstacle, $\epsilon$ is used to
 define a random variable $\rho \sim \mathcal{U}(-\epsilon, \epsilon)$ that is
-injects noise into an obstacle's trajectory shown in Eq.~\ref{eq:obs_observed}
-where $\mathcal{U}$ is a uniform distribution, $\xi$ is the current
-configuration used for prediction, and $T$ is the time that the obstacle was in
-configuration $\xi$.  The variables $\xi$ and $T$ are dynamic variables and are
-updated throughout the execution of the algorithm and are used to determine
-when it is appropriate for the algorithm replan and find a new path through the
-environment using more up to date information. This is explained in
-Sec.~\ref{sec:design_planner}. The variables $\xi$ and $T$ are initially set to
-$I$ and $0$ respectively. It is assumed that the robot has access to this
-information about the dynamic obstacles and will use it to safely around them.
-Information such as the initial configuration and the velocity equation for
-each dynamic obstacle are assumed to be determined by an external system that
-is either using a machine learning technique to deduce these properties by
-using information about where the dynamic obstacle has been before or by an
-external planning system such as in a warehouse that is commanding the
-velocities and configurations of these dynamic obstacles. This is the same
-assumption as that made by Phillips et al~\cite{sipp} and Narayanan et
-al~\cite{asipp}.
+used to inject noise into an obstacle's trajectory shown in
+Eq.~\ref{eq:obs_observed} where $\mathcal{U}$ is a uniform distribution, $\xi$
+is the current configuration used for prediction, and $T$ is the time that the
+obstacle was in configuration $\xi$.  The variables $\xi$ and $T$ are dynamic
+variables and are updated throughout the execution of the algorithm and are
+used to determine when it is appropriate for the algorithm replan and find a
+new path through the environment using more up to date information. This is
+explained in Sec.~\ref{sec:design_planner}. The variables $\xi$ and $T$ are
+initially set to $I$ and $0$ respectively. It is assumed that the robot has
+access to this information about the dynamic obstacles and will use it to
+safely around them.  Information such as the initial configuration and the
+velocity equation for each dynamic obstacle are assumed to be determined by an
+external system that is either using a machine learning technique to deduce
+these properties by using information about where the dynamic obstacle has been
+before or by an external planning system such as in a warehouse that is
+commanding the velocities and configurations of these dynamic obstacles. This
+is the same assumption as that made by Phillips et al~\cite{sipp} and Narayanan
+et al~\cite{asipp}.
 
 \subsection{Cost Function}
 
@@ -69,8 +69,11 @@ defines the cost function for a single obstacle.
 
 In Eq.~\ref{eq:singleprob}, $\mathcal{N}(\mu, \sigma^2, x, y)$ is the
 evaluation of a 3D normal distribution centered at $(\mu_x, \mu_y)$ with a
-variance of $\sigma^2$ at $(x, y)$. Fig.~\ref{fig:normal_3d} shows an example
-of $\mathcal{N}$. This equation models how the uncertainty of obstacle
+variance of $\sigma^2$ at $(x, y)$ and $\alpha$, $\beta$, and $\gamma$ are
+scaling constants such that $\alpha > 0$, $\beta > 0$, and $\gamma \geq 1$.
+Fig.~\ref{fig:normal_3d} shows an example of $\mathcal{N}$. The normal
+distribution works as a basis function to describe the possible trajectories of
+the dynamic obstacle. This equation models how the uncertainty of obstacle
 trajectory prediction increases over time by increasing the standard deviation
 of the Gaussian distribution as the time increases.  Likewise, this function
 multiplies the Gaussian distribution by a factor of $(t_m - t)^{\gamma}$ where
@@ -221,13 +224,15 @@ the configuration space of the robot and connecting them such that if $(i, j)
 \in E$, then $||i - j|| < d$, both $i$ and $j$ are not within any of the static
 obstacles, and there is no collision along the geometric edge from $i$ to $j$.
 In this work the configuration space is $\mathbb{R}^2$ and the edge between two
-nodes is a straight line. The complexity of the graph is parametrized by the
-number of samples, $n$, and the maximum distance between nodes, $d$. By
-increasing the number of samples, the density of samples increases and
-therefore the average degree for a node in the graph increases. Likewise, if
-the maximum distance between nodes increases, so does the average degree for a
-node in the graph. Pseudocode is provided for constructing a probabilistic
-roadmap in Algo.~\ref{algo:prm}.
+nodes is a straight line. The nodes in the roadmap represent the possible
+configurations of the robot and in this work, points along the edge between two
+nodes represent geometric transitions from one node to another. The complexity
+of the graph is parametrized by the number of samples, $n$, and the maximum
+distance between nodes, $d$. By increasing the number of samples, the density
+of samples increases and therefore the average degree for a node in the graph
+increases.  Likewise, if the maximum distance between nodes increases, so does
+the average degree for a node in the graph.  Pseudocode is provided for
+constructing a probabilistic roadmap in Algo.~\ref{algo:prm}.
 
 % Algorithm to generate a roadmap
 \begin{algorithm}[ht]
@@ -274,7 +279,7 @@ any two points that are not the same, whose distance is less than $d$, and if
 there is no collision along the edge between these two points are added to the
 edge set, $E$. Finally, the vertices and edges are returned as a tuple
 representing the graph. Fig.~\ref{fig:prm} shows a constructed probabilistic
-roadmap with 1000 nodes.
+roadmap with 300 nodes.
 
 \begin{figure}[h!]
     \centering
@@ -285,18 +290,80 @@ roadmap with 1000 nodes.
 
 \subsection{Searching the Graph}
 
+To search the generated two dimensional probabilistic roadmap in space-time, a
+novel best first search (tBestFS) algorithm has been developed that creates a
+search tree that expands the current node not only in space but also in time
+until the current node is within an acceptance radius the goal. This algorithm
+works by using priority queue to store to store the expanded nodes. The
+priority is based on two things, how many times a two dimensional node in the
+probabilistic roadmap has been expanded and the cost to reach the node in
+space-time in the queue. A dictionary indexed by the node and mapped to an
+integer is used to keep track of how many times the node has been visited. The
+cost between two nodes in space-time, $(i, t)$ and $(j, t')$ is defined by the
+line integral from $i$ to $j$ over the exponential of the cost distribution $P$
+for the time interval $[t_0, t_m]$ and set of dynamic obstacles $A$. This
+function uses the exponential of the cost distribution in order to emphasize
+higher costs along the path. This is formally shown in Eq.~\ref{eq:cost}.
+
 % Graph cost function
 
-\begin{equation}
-    C(i, j, t_0, t_m, A) = \int^1_0 \exp{\Big(
+\begin{align}
+    C(i, j, t_0, t_m, A) &= \int^1_0 \exp{\Big(
         P(x(\lambda), y(\lambda), t_0, t_m, A) + 1 \Big)
-    } \cdot ||i - j||_{2} \,\mathrm{d}\lambda
+    } \cdot \sqrt{\Big(\frac{\dif x}{\dif t}\Big)^2
+    + \Big(\frac{\dif y}{\dif t}\Big)^2}
+    \,\mathrm{d}\lambda \notag \\
+    % ----------------------------------------------
+    &= \int^1_0 \exp{\Big(
+        P(x(\lambda), y(\lambda), t_0, t_m, A) + 1 \Big)
+    } \cdot \sqrt{(j_x - i_x)^2 + (j_y - i_y)^2}
+    \,\mathrm{d}\lambda \notag \\
+    % ----------------------------------------------
+    &= \int^1_0 \exp{\Big(
+        P(x(\lambda), y(\lambda), t_0, t_m, A) + 1 \Big)
+    } \cdot ||i - j|| \,\mathrm{d}\lambda
     \label{eq:cost}
+\end{align}
+
+In Eq.~\ref{eq:cost}, $C$ is a function $C: \R^2 \times \R^2 \times (\R^+)^2
+\times (\R^+)^2 \times \mathcal{A} \rightarrow \R$ where $\mathcal{A}$ is the
+set of all possible sets of dynamic obstacles, and $x(\lambda) = (j_x - i_x)
+\cdot \lambda + i_x$ and $y(\lambda) = (j_y - i_y) \cdot \lambda + i_y$ are the
+parametric equations of the line from $i$ to $j$.  Eq.~\ref{eq:cost} increases
+exponentially as the maximum cost along the line increases and therefore makes
+edges with larger maximum costs more costly than edges with lower maximum
+costs. To combine the two cost formulations for an edge, $((i, t), (j, t'))$, a
+weighted sum is computed that adds the number of times node $j$ has been
+visited with the line integral over the cost distribution from $i$ to $j$ for
+the given time interval. This total cost function is formally described in
+Eq.~\ref{eq:totalcost}.
+
+\begin{equation}
+    TC(i, j, t_0, t_m, A, D) = \psi \cdot C(i, j, t_0, t_m, A) +
+    \omega \cdot D_j
+    \label{eq:totalcost}
 \end{equation}
 
-Where $x(\lambda) = (j_x - i_x) \cdot \lambda + i_x$ and $y(\lambda) = (j_y -
-i_y) \cdot \lambda + i_y$ are the parametric equations of the line from $i$ to
-$j$.
+In Eq.~\ref{eq:totalcost}, $\psi$ and $\omega$ are scaling constants. It is
+important to incorporate a penalty for returning to a location that has already
+been visited even if this penalty is small because the tBestFS algorithm may
+choose to only expand nodes in a safe area and thus not reach the goal since
+there is not a heuristic to sample nodes closer to the goal in order give
+preference to safer paths instead of shorter ones.
+
+Since the algorithm operates in both space and time, the search tree is
+expanded at a given node, $i$ at a time $t$, by determining how long it would
+take the robot to reach all of the neighbours of $i$ and not only adding each
+neighbour of $i$ into the priority queue with its associated cost, but also
+adding the time at which the robot would reach each neighbour. This is
+accomplished by assuming the robot will travel at a constant speed, $s$,
+through the environment which makes it easy to compute how long it would take
+the robot to reach a neighbour, $j \in \Function{Neighbours}(i)$. The time it
+would take for the robot to reach a neighbour, $j$ from $i$ is $||i - j|| / s$
+which would make the robot reach $j$ at time $t + ||i - j|| / s$.  Also, since
+the algorithm is also operating in time, the robot is able to stay at the same
+location for a given wait time $\delta t$ if it is less costly than moving
+forward to any of its neighbours.
 
 % Algorithm to search the graph
 \begin{algorithm}[ht]
@@ -311,15 +378,19 @@ $j$.
         \STATE $D \leftarrow \Function{Dictionary}()$
         \STATE $\mathcal{P} \leftarrow \Function{Dictionary}()$
         \STATE $\Function{Insert}(Q, p, T)$
-        \WHILE {$\neg \Function{Empty}(Q)$}
+        \WHILE {$|Q| > 0$}
             \STATE $(q, t) \leftarrow \Function{Pop}(Q)$
             \IF{$||q - g|| \leq R$}
-                \RETURN $\Function{BacktrackPath}(p, g, \mathcal{P})$
+                \RETURN $\Function{BacktrackPath}(p, q, t, \mathcal{P})$
             \ENDIF
             \STATE $S \leftarrow \emptyset$
-            \STATE $N \leftarrow \Function{Neighbours}(V, E, q)$
+            \STATE $N \leftarrow \Function{Neighbours}(V, E, q) \cup \{q\}$
             \FORALL {$n \in N$}
-                \STATE $t' \leftarrow ||q - n|| / s + t$
+                \IF {$q \neq n$}
+                    \STATE $t' \leftarrow ||q - n|| / s + t$
+                \ELSE
+                    \STATE $t' \leftarrow t + \delta t$
+                \ENDIF
                 \STATE $\mathcal{P}_{(n, t')} \leftarrow (q, t)$
                 \STATE $c \leftarrow \psi \cdot C(q, n, t, t', A) + \omega
                     \cdot D_{\eta}$
@@ -332,37 +403,67 @@ $j$.
 
 % Given a parent dictionary, this returns the backtracked path
 \begin{algorithm}[ht]
-    \caption{$\Function{BacktrackPath}(p, g, \mathcal{P})$}
+    \caption{$\Function{BacktrackPath}(p, g, t, \mathcal{P})$}
     % \algorithmicrequire{}
     % \\\algorithmicensure{}
     \label{algo:backtrack}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
         \vspace*{1mm}
-        \STATE $q \leftarrow g$
+        \STATE $(q, t') \leftarrow (g, t)$
         \STATE $S \leftarrow \Function{Stack}()$
-        \WHILE {$\mathcal{P}_q \neq p$}
-            \STATE $S \leftarrow \Function{Push}(S, q)$
-            \STATE $(q, t) \leftarrow \mathcal{P}_{q, t})$
+        \WHILE {$\mathcal{P}_{(q, t')} \neq (p, 0)$}
+            \STATE $S \leftarrow \Function{Push}(S, (q, t'))$
+            \STATE $(q, t') \leftarrow \mathcal{P}_{(q, t')}$
         \ENDWHILE
-        \STATE $S \leftarrow \Function{Push}(S, p)$
+        \STATE $S \leftarrow \Function{Push}(S, (p, 0))$
         \RETURN $S$
     \end{algorithmic}
 \end{algorithm}
 
+\begin{theorem}
+
+    \label{theorem:completeness}
+
+    tBestFS is complete.
+
+\end{theorem}
+
+\begin{proof}
+
+    Test $\blacksquare$
+
+\end{proof}
+
+
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.32\linewidth]{figs/tree_0}
-    \includegraphics[width=0.32\linewidth]{figs/tree_2}
-    \includegraphics[width=0.32\linewidth]{figs/tree_4} \\
+    \includegraphics[width=0.32\linewidth]{figs/tree_1}
+    \includegraphics[width=0.32\linewidth]{figs/tree_2} \\
+    \includegraphics[width=0.32\linewidth]{figs/tree_3}
+    \includegraphics[width=0.32\linewidth]{figs/tree_4}
+    \includegraphics[width=0.32\linewidth]{figs/tree_5} \\
     \includegraphics[width=0.32\linewidth]{figs/tree_6}
+    \includegraphics[width=0.32\linewidth]{figs/tree_7}
     \includegraphics[width=0.32\linewidth]{figs/tree_8}
-    \includegraphics[width=0.32\linewidth]{figs/tree_10} \\
-    \includegraphics[width=0.32\linewidth]{figs/tree_12}
-    \includegraphics[width=0.32\linewidth]{figs/tree_14}
-    \includegraphics[width=0.32\linewidth]{figs/tree_15}
     \caption{}
     \label{fig:tree}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_0}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_1}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_2} \\
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_3}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_4}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_5} \\
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_6}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_7}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_8}
+    \caption{}
+    \label{fig:ex_agents}
 \end{figure}
 
 \subsection{Replanning}
@@ -405,7 +506,5 @@ $j$.
         \RETURN $\Pi$
     \end{algorithmic}
 \end{algorithm}
-
-
 
 \end{document}

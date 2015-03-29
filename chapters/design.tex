@@ -42,18 +42,16 @@ the standard potential field implementation for robotic motion planning as
 shown in Eq.~\ref{eq:badpotentialattr}
 
 \begin{equation}
-    U_{\Var{att}}(p, g) = \frac{c}{||p - g||^2 + \epsilon}
+    U_{\Var{att}}(p, g) = c \cdot ||p - g||^2
     \label{eq:badpotentialattr}
 \end{equation}
 
-In Eq.~\ref{eq:badpotentialattr}, $\epsilon$ is a constant such that $0 <
-\epsilon < c$ and is used to ensure that the function does not have a
-singularity and $c$ is a scaling constant such that $c > 0$. The potential
-field planner would use the sum of these two fields to measure the potential
-through the environment in order to eventually reach the goal by successively
-moving to the area within the robot's sensing radius that had the minimal
-potential. Algo.~\ref{algo:pf} describes more formally how the potential field
-planner generates a path through the environment.
+In Eq.~\ref{eq:badpotentialattr}, $c$ is a scaling constant such that $c > 0$.
+The potential field planner would use the sum of these two fields to measure
+the potential through the environment in order to eventually reach the goal by
+successively moving to the area within the robot's sensing radius that had the
+minimal potential.  Algo.~\ref{algo:pf} describes more formally how the
+potential field planner generates a path through the environment.
 
 \begin{algorithm}[ht]
 
