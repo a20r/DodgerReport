@@ -365,6 +365,19 @@ the algorithm is also operating in time, the robot is able to stay at the same
 location for a given wait time $\delta t$ if it is less costly than moving
 forward to any of its neighbours.
 
+The algorithm progresses forward by expanding the best current node in the
+priority queue. This is the node that has the smallest combined cost in the
+queue.  Once a node, $i$ at time $t$, is expanded and its temporal neighbours
+determined, the parent for each of these neighbours is defined as $i$ at time
+$t$. By storing the parents of each of the neighbours, it becomes possible to
+backtrack from the goal to the starting position once the goal is reached and
+construct a path to the goal configuration. The algorithm terminates either
+when there are no more nodes in the priority queue or once the node popped out
+of the queue is less than a certain distance away from the goal node. Once the
+node popped out of the priority queue is within the goal region, the path to
+this path to the goal is returned. The algorithm used for searching the graph
+is described formally in Algo.~\ref{algo:search}.
+
 % Algorithm to search the graph
 \begin{algorithm}[ht]
     \caption{$\Function{SearchGraph}(V, E, R, A, p, g, T)$}
@@ -401,25 +414,40 @@ forward to any of its neighbours.
     \end{algorithmic}
 \end{algorithm}
 
-% Given a parent dictionary, this returns the backtracked path
-\begin{algorithm}[ht]
-    \caption{$\Function{BacktrackPath}(p, g, t, \mathcal{P})$}
-    % \algorithmicrequire{}
-    % \\\algorithmicensure{}
-    \label{algo:backtrack}
-    \begin{algorithmic}[1]
-        \setcounter{ALC@line}{0}
-        \vspace*{1mm}
-        \STATE $(q, t') \leftarrow (g, t)$
-        \STATE $S \leftarrow \Function{Stack}()$
-        \WHILE {$\mathcal{P}_{(q, t')} \neq (p, 0)$}
-            \STATE $S \leftarrow \Function{Push}(S, (q, t'))$
-            \STATE $(q, t') \leftarrow \mathcal{P}_{(q, t')}$
-        \ENDWHILE
-        \STATE $S \leftarrow \Function{Push}(S, (p, 0))$
-        \RETURN $S$
-    \end{algorithmic}
-\end{algorithm}
+From the algorithm in Algo.~\ref{algo:search}, it is evident that picking a
+good wait time, $\delta t$, is important for generating safe paths through the
+environment. Having a large value for $\delta t$ can lead to very suboptimal
+paths because even though staying in the same position for a given period of
+time may be safer than moving to any of the neighbours, staying there for too
+long could lead the planner to miss safer viable paths. For instance, say the
+planner has expanded a node, $i$ at time $t$ and $TC(i, i, t, t + \delta t, A,
+D) < TC(i, j, t, t + ||i - j|| / s, A, D)$ for all $j \in
+\Function{Neighbours}(i)$. There may be a neighbour $j$ and some time $t'$ such
+that $t < t' < t + \delta t$ where $TC(i, j, t, t', A, D) < TC(i, i, t, t +
+\delta t, A, D)$. Moving the robot to node $j$ at time $t'$ from $i$ at time
+$t$ would lead to a safer path than staying at node $i$ until time $t + \delta
+t$. This is why it is important for the safety of the generated paths to use a
+small value for $\delta t$ in order to not miss sampling safe paths.
+
+% % Given a parent dictionary, this returns the backtracked path
+% \begin{algorithm}[ht]
+%     \caption{$\Function{BacktrackPath}(p, g, t, \mathcal{P})$}
+%     % \algorithmicrequire{}
+%     % \\\algorithmicensure{}
+%     \label{algo:backtrack}
+%     \begin{algorithmic}[1]
+%         \setcounter{ALC@line}{0}
+%         \vspace*{1mm}
+%         \STATE $(q, t') \leftarrow (g, t)$
+%         \STATE $S \leftarrow \Function{Stack}()$
+%         \WHILE {$\mathcal{P}_{(q, t')} \neq (p, 0)$}
+%             \STATE $S \leftarrow \Function{Push}(S, (q, t'))$
+%             \STATE $(q, t') \leftarrow \mathcal{P}_{(q, t')}$
+%         \ENDWHILE
+%         \STATE $S \leftarrow \Function{Push}(S, (p, 0))$
+%         \RETURN $S$
+%     \end{algorithmic}
+% \end{algorithm}
 
 \begin{theorem}
 
@@ -431,7 +459,7 @@ forward to any of its neighbours.
 
 \begin{proof}
 
-    Test $\blacksquare$
+    Test
 
 \end{proof}
 
@@ -451,20 +479,20 @@ forward to any of its neighbours.
     \label{fig:tree}
 \end{figure}
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.32\linewidth]{figs/ex_agent_0}
-    \includegraphics[width=0.32\linewidth]{figs/ex_agent_1}
-    \includegraphics[width=0.32\linewidth]{figs/ex_agent_2} \\
-    \includegraphics[width=0.32\linewidth]{figs/ex_agent_3}
-    \includegraphics[width=0.32\linewidth]{figs/ex_agent_4}
-    \includegraphics[width=0.32\linewidth]{figs/ex_agent_5} \\
-    \includegraphics[width=0.32\linewidth]{figs/ex_agent_6}
-    \includegraphics[width=0.32\linewidth]{figs/ex_agent_7}
-    \includegraphics[width=0.32\linewidth]{figs/ex_agent_8}
-    \caption{}
-    \label{fig:ex_agents}
-\end{figure}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_0}
+%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_1}
+%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_2} \\
+%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_3}
+%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_4}
+%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_5} \\
+%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_6}
+%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_7}
+%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_8}
+%     \caption{}
+%     \label{fig:ex_agents}
+% \end{figure}
 
 \subsection{Replanning}
 
