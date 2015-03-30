@@ -15,6 +15,8 @@ planner and its simulated \& predicted equations of motion.
 
 \subsection{Definition}
 
+\label{sec:def}
+
 A dynamic obstacle is defined as a 5-tuple, $a = (I, \dot{\zeta},
 \epsilon, \xi, T)$ where $I$ is the initial configuration of the obstacle,
 $\dot{\zeta}$ is a function, $\dot{\zeta}: \mathbb{R}^+ \rightarrow
@@ -380,7 +382,7 @@ is described formally in Algo.~\ref{algo:search}.
 
 % Algorithm to search the graph
 \begin{algorithm}[ht]
-    \caption{$\Function{SearchGraph}(V, E, R, A, p, g, T)$}
+    \caption{$\Acronym{tBestFS}(V, E, R, A, p, g, T)$}
     % \algorithmicrequire{}
     % \\\algorithmicensure{}
     \label{algo:search}
@@ -429,8 +431,49 @@ $t$ would lead to a safer path than staying at node $i$ until time $t + \delta
 t$. This is why it is important for the safety of the generated paths to use a
 small value for $\delta t$ in order to not miss sampling safe paths. By using a
 smaller value for $\delta t$, the chance that a safer path would be missed
-decreases, but the number of nodes in the search tree would increase. Below are
-theorems and proofs about the properties of $\Acronym{tBestFS}$.
+decreases, but the number of nodes in the search tree would increase.
+
+Fig.~\ref{fig:tree} shows how the search tree for $\Acronym{tBestFS}$ is being
+built in space-time as the algorithm progresses. The sequence for this figure
+is left to right, up to down. The last plot in the Fig.~\ref{fig:tree} also
+shows the path in red that was returned by $\Acronym{tBestFS}$.
+Fig.~\ref{fig:ex_agents} shows how the dynamic obstacle cost distribution
+changes over time for the search tree in Fig.~\ref{fig:tree}. In
+Fig.~\ref{fig:tree}, the tree is being expanded into areas that have low cost
+in space-time and that is why the tree is being expanded on the left of the
+scene. It is evident that the tree is essentially moving around the dynamic
+obstacles when they are all near each other on the right side of the scene.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.32\linewidth]{figs/tree_0}
+    \includegraphics[width=0.32\linewidth]{figs/tree_1}
+    \includegraphics[width=0.32\linewidth]{figs/tree_2} \\
+    \includegraphics[width=0.32\linewidth]{figs/tree_3}
+    \includegraphics[width=0.32\linewidth]{figs/tree_4}
+    \includegraphics[width=0.32\linewidth]{figs/tree_5} \\
+    \includegraphics[width=0.32\linewidth]{figs/tree_6}
+    \includegraphics[width=0.32\linewidth]{figs/tree_7}
+    \includegraphics[width=0.32\linewidth]{figs/tree_8}
+    \caption{}
+    \label{fig:tree}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_0}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_1}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_2} \\
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_3}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_4}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_5} \\
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_6}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_7}
+    \includegraphics[width=0.32\linewidth]{figs/ex_agent_8}
+    \caption{}
+    \label{fig:ex_agents}
+\end{figure}
+
 
 % % Given a parent dictionary, this returns the backtracked path
 % \begin{algorithm}[ht]
@@ -452,6 +495,15 @@ theorems and proofs about the properties of $\Acronym{tBestFS}$.
 %     \end{algorithmic}
 % \end{algorithm}
 
+\subsubsection{Completeness}
+
+It is important to prove certain properties about the completeness of the
+$\Acronym{tBestFS}$ algorithm in order to guarantee that the algorithm will
+always return a path in a finite amount of time. Firstly it is important to
+prove properties about the functions that make up the edge cost because they
+form the foundation of the completeness proof. The first property is described
+in Lemma~\ref{theorem:increasing}.
+
 \begin{lemma}
 
     \label{theorem:increasing}
@@ -463,24 +515,53 @@ theorems and proofs about the properties of $\Acronym{tBestFS}$.
 
 \begin{proof}
 
-
+    Since the added penalty for returning to a node increases by one each time
+    the node is visited, as the number of times it has been revisited increases
+    to infinity, so does the added penalty.
 
 \end{proof}
+
+\begin{corollary}
+
+    The total cost, $TC$, is a monotonically increasing function.
+
+\end{corollary}
+
+The second property of the functions that make up the edge cost is shown in
+Lemma~\ref{theorem:capped} which describes that the cost function, $C$ will
+always have a value less than infinity for all permissible parameters.
 
 \begin{lemma}
 
     \label{theorem:capped}
 
-    The cost for $\forall (m, n) \in E$ for a time interval $[t, t']$ such that
-    $t' - t < \infty$ is strictly less than infinity.
+    The cost for any $(m, n) \in E$ for a time interval $[t, t']$ such that $t'
+    - t < \infty$ is strictly less than infinity and $0 < t < t'$.
 
 \end{lemma}
 
 \begin{proof}
 
-
+    The function, $C$, can only increase to infinity if the two nodes on the
+    edge are an infinite distance apart or if the cost distribution in
+    Eq.~\ref{eq:singleprob}, $P$, increases towards infinity. For the former,
+    two nodes cannot be an infinite distance apart because the connection
+    distance, $d$, is set to be strictly less than infinity and because the
+    $\forall i, j \in V : ||i - j|| \leq \sqrt{w^2 + h^2}$ where $0 < w <
+    \infty$ and $0 < h < \infty$ are the width and height of the scene
+    respectively. Therefore $C$ cannot tend to infinity because of the distance
+    between nodes since no two nodes are an infinite distance away. For the
+    latter, $P$ can only tend to infinity if the normal distribution,
+    $\mathcal{N}$ reaches infinity. This is only possible if the variance
+    approaches 0. However the variance cannot reach $0$ in case because the
+    constant $\beta$ is always greater than zero. Therefore it is impossible
+    for the cost along an edge, $C$, to tend towards infinity.
 
 \end{proof}
+
+Using Lemmas~\ref{theorem:increasing} and~\ref{theorem:capped}, a proof can be
+constructed for Theorem~\ref{theorem:completeness} which states that
+$\Acronym{tBestFS}$ is complete and will always return a path.
 
 \begin{theorem}
 
@@ -513,42 +594,46 @@ theorems and proofs about the properties of $\Acronym{tBestFS}$.
     below infinity and the added penalty increases monotonically towards
     infinity, all edges to the goal node would have a lower cost than any edge
     to any other node and thus the goal would be expanded. If the goal is
-    expanded, a path to the goal would be returned.
+    expanded, a path to the goal would be returned. The path is returned in a
+    finite amount of time because the number of nodes in the graph is finite.
 
 \end{proof}
 
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.32\linewidth]{figs/tree_0}
-    \includegraphics[width=0.32\linewidth]{figs/tree_1}
-    \includegraphics[width=0.32\linewidth]{figs/tree_2} \\
-    \includegraphics[width=0.32\linewidth]{figs/tree_3}
-    \includegraphics[width=0.32\linewidth]{figs/tree_4}
-    \includegraphics[width=0.32\linewidth]{figs/tree_5} \\
-    \includegraphics[width=0.32\linewidth]{figs/tree_6}
-    \includegraphics[width=0.32\linewidth]{figs/tree_7}
-    \includegraphics[width=0.32\linewidth]{figs/tree_8}
-    \caption{}
-    \label{fig:tree}
-\end{figure}
-
-% \begin{figure}[h!]
-%     \centering
-%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_0}
-%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_1}
-%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_2} \\
-%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_3}
-%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_4}
-%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_5} \\
-%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_6}
-%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_7}
-%     \includegraphics[width=0.32\linewidth]{figs/ex_agent_8}
-%     \caption{}
-%     \label{fig:ex_agents}
-% \end{figure}
-
 \subsection{Replanning}
+
+In order to generate safe paths in uncertain, stochastic environments, the
+planner is not able to simply provide an \emph{a priori} plan from the
+$\Acronym{tBestFS}$ algorithm. It is necessary for the planner to generate new
+paths from the current configuration of the robot as it progresses through the
+environment if the actual trajectory of a dynamic obstacle deviates too much
+from its predicted trajectory. This planning occurs in real-time during the
+execution of the path in the environment. This framework for regenerating paths
+is called \emph{replanning}. Replanning for this work occurs once the model of
+movement for a given dynamic obstacle can no longer predict within an
+acceptable error the actual position of the dynamic obstacle. When replanning,
+the same probabilistic roadmap is used and the connectivity of the environment
+is not resampled.
+
+Replanning works by first generating a preliminary path through the environment
+using the $\Acronym{tBestFS}$ algorithm. The robot will then follow this path
+by moving at its prescribed constant speed, $s$, in a straight line from node
+to node in the path. Once it reaches a node, $i$ at time $t$ in the path, the
+robot checks whether the actual locations of the obstacles either sensed by the
+robot or by an external system differ more than an acceptable amount, $\delta$,
+from the predicted locations of the dynamic obstacles at time $t$ i.e.
+
+$$\bigvee_{a \in A} ||\tilde{\zeta_a}(t') - \zeta_a(t')|| > \delta$$
+
+Where $A$ is the set of dynamic obstacles. If this proposition is true, there
+is substantial deviation in the obstacle positions, the planner will update the
+value of the dynamic variables, $T$ and $\xi$ for the obstacles which are used
+for predicting their trajectories to $t$ and $\tilde{\zeta_a}(t)$ respectively.
+These variables are part of the 5-tuple defining the dynamic obstacles which is
+described in Sec.~\ref{sec:def}. Once these variables are updated, the graph is
+searched using the $\Acronym{tBestFS}$ algorithm starting from the current
+position of the robot, $i$ with a starting time of $t$. It is also important to
+note that the same dictionary used for storing how many times a node has been
+visited is reused when searching the graph again.
 
 % Main algorithm to get the path
 \begin{algorithm}[ht]
@@ -577,7 +662,8 @@ theorems and proofs about the properties of $\Acronym{tBestFS}$.
                 \IF {$\bigvee_{a \in A} ||\tilde{\zeta_a}(t') -
                     \zeta_a(t')|| > \delta$}
                     \FORALL {$a \in A$}
-                        \STATE $\Function{Update}(\zeta_a, \tilde{\zeta_a})$
+                        \STATE $T_a \leftarrow t'$
+                        \STATE $\xi_a \leftarrow \tilde{\zeta_a}(t')$
                     \ENDFOR
                     \STATE $q \leftarrow i$
                     \STATE $t \leftarrow t'$
