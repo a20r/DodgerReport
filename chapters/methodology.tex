@@ -164,25 +164,43 @@ $\xi_a$ and $T_a$ are dynamically updated when the planner replans and are
 initially set to $I_a$ and $0$ respectively. The need for this and how it is
 designed will be discussed in Sec.~\ref{sec:design_planner}
 
-For the experiments, the motion of the obstacles are simulated by adding a
+For the experiments, the motion of the obstacles is simulated by adding a
 random variable, $\rho \sim \mathcal{U}(-\epsilon, \epsilon)$ to the trajectory
-during the integration of the velocity equation. This form of stochasticity
-allows the obstacle to diverge from its specified trajectory whilst maintaining
-the same velocity equation. This means that the obstacle will not exhibit
-random motion around its specified path, but rather is able to diverge
-completely. Also, by adding the random variable to the velocity equation during
-integration, the obstacle will not "jump" to a new location, but will gradually
-diverge and because it is analogous to the way the random variable was used
-during the numerical integration in the code. The definition of
-$\tilde{\zeta_a}$ is shown in Eq.~\ref{eq:obs_observed}.  For this equation, it
-is assumed that the function only computes a value for any given time value,
-$t$, only once.
+during the numerical integration of the velocity equation. This form of
+stochasticity allows the obstacle to diverge from its specified trajectory
+whilst maintaining the same velocity equation. This means that the obstacle
+will not exhibit random, Brownian motion around its specified path, but rather
+is able to diverge completely. Also, by adding the random variable to the
+velocity equation during the numerical integration, the obstacle will not
+"jump" to a new location, but will gradually diverge off of its specified path.
+The definition of $\tilde{\zeta_a}$ is shown in Eq.~\ref{eq:obs_observed}.  For
+this equation, it is assumed that the function only computes a value for any
+given time value, $t$, only once.
 
 \begin{equation}
-    \tilde{\zeta_a}(t) = I_a + \int_{0}^{t} \dot{\zeta_a}(\lambda)
-    + \rho \, \mathrm{d}\lambda
+    \tilde{\zeta_a}(t) =
+        \begin{cases}
+            \tilde{\zeta_a}(t - \delta t) + \dot{\zeta_a}(t) \cdot \delta t
+            + \rho
+            & \text{if } t > 0 \\
+            I_a & \text{if } t = 0
+        \end{cases}
     \label{eq:obs_observed}
 \end{equation}
+
+In Eq.~\ref{eq:obs_observed}, $\delta t$ is a constant where $\delta t > 0$ and
+is used for the numerical integration of the velocity. Numerical integration is
+used in order to allow the path to diverge. Since a recursive function is used
+for determining the current position of the obstacle, the obstacle's next
+location will be determined by its last location, its velocity, and a certain
+error factor $\rho$. This will allow the obstacle to exhibit more than simply
+Brownian motion along a path and it will be able to diverge completely from its
+specified path. This type of uncertainty is important because it is exhibited
+in real-world scenarios such as error propagation in controls and by simply not
+having enough information about the actual velocity equation for a given
+obstacle. The full extent of $\tilde{\zeta_a}$ is not known by the planner and
+this equation is only used to simulate the motion of the obstacles for
+experimentation and evaluation of the developed planner.
 
 By increasing the level of stochasticity, $\epsilon$, for a given dynamic
 obstacle, it will be more likely to diverge from its current path. This means
@@ -191,10 +209,11 @@ value for $\epsilon$.
 
 The motion of a dynamic obstacle is described by it's velocity and a starting
 location in order for the planner to be able to continue to predict an
-obstacle's motion when it diverges from its current path. If the obstacle's
-motion was described by parametric equations of its position, it would not be
-possible to continue to predict where it is going to move once it is no longer
-following its prescribed path.
+obstacle's motion even when it diverges from its current path. If the
+obstacle's motion was described by parametric equations of its position, it
+would not be possible to continue to predict where it is going to move once it
+is no longer following its prescribed path since the obstacle may diverge from
+this path completely.
 
 \section{Planning Algorithm}
 
@@ -686,14 +705,12 @@ for the execution of the path. The $\Acronym{tBestFS}$ is able to account for
 some uncertainty in the motion of the obstacles as described by the cost
 distribution in Sec.~\ref{sec:cost} but this distribution is not able to fully
 account for path divergences. By updating the information for the dynamic
-obstacles, re-searching the probabilistic roadmap using $\Acronym{tBestFS}$,
+obstacles and re-searching the probabilistic roadmap using $\Acronym{tBestFS}$,
 safer overall paths can be generated. It is possible to regulate the number of
 times the planner will need to replan and thus the safety of the plan by
 adjusting the value for $\delta$. The larger the value for $\delta$, the more
 the obstacles the will need to diverge from the prescribed trajectories in
 order to replan and vice-versa.
-
-% You are here bro.
 
 \subsubsection{Completeness}
 
