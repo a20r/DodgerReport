@@ -24,6 +24,47 @@ attempts are described individually and more detail in this section.
 
 \section{Space-time Bug Algorithm}
 
+The initial design for the algorithm was to use a bug algorithm that operates
+in space-time. Bug algorithms work by moving the robot towards the goal until
+it reaches an obstacle. Once an obstacle has been reached, the bug algorithm
+will move the robot along the edge of the obstacle until the obstacle is no
+longer between the robot and the goal. The robot will then move to the goal and
+repeat this process if necessary. An example of this algorithm in practice is
+shown in Fig.~\ref{fig:bug}. This proposed design was going to treat the
+dynamic obstacles moving in two dimensions as three dimensional static
+obstacles in three dimensions where time is the third dimension. The robot
+would use the bug algorithm to move through the environment in three
+dimensions. A constraint would have been added to the movement of the robot
+which would be that it could not move backward in the last dimension, time.
+The benefit of this design is that completeness could be proven geometrically,
+it is a computationally simple algorithm, and it could be easily implemented
+for use on a mobile robot. This design was not implemented because of several
+fundamental flaws discovered during the design phase. Firstly, by thinking of
+dynamic obstacles as static obstacles in space-time, the robot would have to
+rely on perfect information about the movement of the dynamic obstacles, i.e.
+there could be very little uncertainty about the movements or predictions of
+the movements in the dynamic obstacles. For the planner to be able to handle
+uncertainty in the motion of the obstacles \emph{a priori}, obstacles would
+need to be increased in their size (emphasizing the possible positions of the
+dynamic obstacles) as time increases. This could lead to possibly unrecoverable
+configurations because obstacles in space-time could be seen as overlapping
+thus not providing a collision free area for the robot to move through. It was
+ultimately decided not to continue with this design but instead to leverage a
+more stochastic and probabilistic definition of the dynamic obstacles and to
+use planning techniques more suited for stochastic dynamic environments.
+
+\begin{figure}[h!]
+
+    \centering
+
+    \includegraphics[width=0.7\linewidth]{figs/bug}
+
+    \caption{Erion}
+
+    \label{fig:bug}
+
+\end{figure}
+
 \section{Potential Fields}
 
 Using potential fields was an initial attempt to plan through uncertain dynamic

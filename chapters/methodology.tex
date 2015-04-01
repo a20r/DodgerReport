@@ -1,17 +1,27 @@
 
 \begin{document}
 
-\chapter{Methodology}
+\chapter{Planner Methodology}
 
 \label{chapter:methodology}
 
+As described briefly in Sec.~\ref{sec:finaldesign}, the final planner design
+uses a probabilistic roadmap to capture the connectivity of the environment and
+uses a novel variant of best first search to find a safe, low cost path the
+goal.  This section describes the algorithm as well as formalizes the
+definition of a dynamic obstacle and its associated cost distribution and
+motion.
+
 \section{Dynamic Obstacles}
 
-As a main component of this work, dynamic obstacles needed to be designed such
-that one could quantify their trajectories, initial configurations, and their
-level of uncertainty. This section introduces the definition of a dynamic
-obstacle used throughout this work along with how it is represented to the
-planner and its simulated \& predicted equations of motion.
+As a major component of this work, dynamic obstacles need to be designed such
+that one can describe their trajectories, initial configurations, and their
+levels of uncertainty. This section introduces the definition of a dynamic
+obstacle used throughout this work along with how one is represented to the
+planner and its simulated \& predicted equations of motion. Specifically, the
+formal definition of a dynamic obstacle will be introduced, a novel way of
+representing obstacles using a cost distribution will be formalized, and their
+predicted and simulated motion will be described.
 
 \subsection{Definition}
 
@@ -139,6 +149,8 @@ this distribution changes over time (left to right, top to bottom)}
 
 \subsection{Equations of Motion}
 
+\label{sec:motion}
+
 The motion of a dynamic obstacle is defined by the velocity equation, the
 initial configuration, the amount of uncertainty. Defining the obstacle's
 trajectory in terms of its velocity makes it easier to model when creating
@@ -214,6 +226,26 @@ obstacle's motion was described by parametric equations of its position, it
 would not be possible to continue to predict where it is going to move once it
 is no longer following its prescribed path since the obstacle may diverge from
 this path completely.
+
+\subsection{Available Information}
+
+It is important to note what information is available to the planner. It is not
+assumed that the planner has perfect information about the motion of the
+obstacles or their associated definitions. The planner only has access to the
+obstacles' velocity equations and their positions throughout the execution of
+path.  The planner does not know the amount of noise, $\epsilon$, being
+injected into the obstacles' velocities as described in Sec.~\ref{sec:motion}.
+It is also assumed that the robot or an external system is evaluating the cost
+distribution based on the predicted motion of the dynamic obstacles in the
+future. Even though these assumptions may seem unrealistic, there are currently
+methods being developed that are able to extrapolate and predict the motion of
+obstacles based on their past locations or based on the algorithm used to
+dictate their behaviour~\cite{rus, cmu, boulder, edi1, edi2}. Also, as
+described in Sec.~\ref{sec:plannerdiscussion}, the planner does not need to
+have a perfectly precise equation for the obstacles' motion because the planner
+has the ability to construct a new plan through the environment if the
+prediction of the obstacles' motion does not accurately depict where the
+obstacle actually is.
 
 \section{Planning Algorithm}
 
@@ -396,8 +428,8 @@ construct a path to the goal configuration. The algorithm terminates either
 when there are no more nodes in the priority queue or once the node popped out
 of the queue is less than a certain distance away from the goal node. Once the
 node popped out of the priority queue is within the goal region, the path to
-this path to the goal is returned. The algorithm used for searching the graph
-is described formally in Algo.~\ref{algo:search}.
+the goal is returned. The algorithm used for searching the graph is described
+formally in Algo.~\ref{algo:search}.
 
 % Algorithm to search the graph
 \begin{algorithm}[ht]
@@ -518,10 +550,15 @@ obstacles when they are all near each other on the right side of the scene.
 
 It is important to prove certain properties about the completeness of the
 $\Acronym{tBestFS}$ algorithm in order to guarantee that the algorithm will
-always return a path in a finite amount of time. Firstly it is important to
-prove properties about the functions that make up the edge cost because they
-form the foundation of the completeness proof. The first property is described
-in Lemma~\ref{theorem:increasing}.
+always return a path in a finite amount of time. For the completeness proof it
+is first important to prove properties about the bounds of the two functions
+that comprise the total cost function for an edge. The proof for completeness
+rests on the fact that the added penalty of returning to a node will be
+monotonically increasing as the number of times the node has been visited
+increases and that the cost of an edge is strictly finite for all acceptable
+parameters. The proof uses these properties to show that in a finite amount of
+time, it will be more favourable to expand towards the goal node than to stay
+in the same location.
 
 \begin{lemma}
 
@@ -641,7 +678,7 @@ robot checks whether the actual locations of the obstacles either sensed by the
 robot or by an external system differ more than an acceptable amount, $\delta$,
 from the predicted locations of the dynamic obstacles at time $t$ i.e.
 
-$$\bigvee_{a \in A} ||\tilde{\zeta_a}(t') - \zeta_a(t')|| > \delta$$
+$$\bigvee_{a \in A} ||\tilde{\zeta_a}(t) - \zeta_a(t)|| > \delta$$
 
 Where $A$ is the set of dynamic obstacles. If this proposition is true, there
 is substantial deviation in the obstacle positions, the planner will update the
@@ -727,5 +764,28 @@ order to replan and vice-versa.
 
 
 \end{proof}
+
+\subsection{Discussion}
+
+\label{sec:plannerdiscussion}
+
+The final algorithm developed is able to generate low cost paths through the
+environment by using the available information about the obstacles' motion. The
+planner is able to do this by searching through space-time over a two
+dimensional graph using the $\Acronym{tBestFS}$ algorithm which uses the cost
+distribution described in Sec.~\ref{sec:cost} to weight the edges of the search
+tree. The algorithm is also able to adapt and create new plans through the
+environment when its' prediction of the obstacles' motion is no longer able to
+accurately determine where the obstacles are going to be in future. This
+replanning stage of the algorithm allows it to be used in real-time in
+stochastic dynamic environments. This mimics the reactive behaviour of
+potential fields, with the added benefit of provable completeness and not being
+a solely reactive planner. Likewise, the replanning ability allows the
+information given to the planner about the motion of the obstacles not to be
+perfect. Even if the equations of motion that the motion prediction system
+provides in now way describe the actual motion of the obstacles, the algorithm
+will simply replan at every time step and instead of using the cost
+distributions to determine paths through the environment, the planner will
+simply move to the next best node in the probabilistic roadmap.
 
 \end{document}
