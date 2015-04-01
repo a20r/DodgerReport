@@ -786,6 +786,8 @@ perfect. Even if the equations of motion that the motion prediction system
 provides in now way describe the actual motion of the obstacles, the algorithm
 will simply replan at every time step and instead of using the cost
 distributions to determine paths through the environment, the planner will
-simply move to the next best node in the probabilistic roadmap.
+simply move to the next best node in the probabilistic roadmap. This means that
+the algorithm is able to continuously plan through stochastic dynamic
+environments utilizing the available information to move the robot to the goal.
 
 \end{document}
