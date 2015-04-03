@@ -5,8 +5,84 @@
 
 \label{chapter:discussion}
 
-\section{Conclusions}
+\section{Evaluation}
 
 \section{Future Work}
+
+There are many possible improvements to this project that could not be
+accomplished in the given time frame. This section addresses these future
+improvements and how they can impact the performance and robustness of the
+project.
+
+\subsection{Pruning the Search Tree}
+
+Currently, the only mechanism used to prune the search tree is the priority of
+the nodes being expanded. This allows some nodes in the probabilistic roadmap
+not to be expanded thus limiting the overall size of the tree. However, more
+complex machine learning techniques could be used such as limiting the density
+of the search tree in certain areas and not expanding nodes in a geometric area
+that have consistently shown to have higher costs. Pruning the search tree
+could have drastic result in reducing the computational time needed to find a
+safe path because less nodes would need to be expanded and searched. Another
+approach at limiting the size of the search tree could be to use another
+heuristic that could provide some information about how close a certain node is
+to reaching the goal. This would find paths to the goal more quickly because
+the search is more directed. There would have to be some constraints used in
+this heuristic, for instance, its influence in the priority of a node in the
+queue because the safeness of a path would be sacrificed in return for
+decreased computational time. Likewise, decreasing the average degree of a node
+in the probabilistic roadmap whilst keeping it one connected component would
+limit the size of the search tree and thus computational time. This could be
+done by using alternative roadmap construction methods such as connecting the
+$k$-nearest neighbours instead of all nodes within a given radius.
+
+\subsection{Variable Speed and Wait Time}
+
+\subsection{Increasing Robot Dimensionality}
+
+\subsection{Real World Experiments}
+
+Since this is a project is concerned with moving a physical robot through an
+environment, an important piece of future work would be to conduct experiments
+using a physical robot in a real-world scenario. This would mean adapting the
+path generated for the robot in to a list of control inputs that would account
+for the physics of the robot to move it to the goal. Since the project provides
+a sequence of spatio-temporal waypoints, a specialized controller can be
+created for different mobile robots that could follow the waypoints generated.
+It may also be beneficial to utilize the control model for the given robot into
+the planning. So instead of the result of the planning algorithm returning a
+sequence of waypoints, it could directly return a sequence of control inputs
+that could be fed into a robot's controller to move it to the goal. Another
+important component of implementing the system on a mobile robot would be the
+active prediction of obstacle movements. In this work, it is assumed that there
+is an external system being used that can determine where obstacles are going
+to move in the future. This system would either have to be implemented or an
+existing one used in order for the algorithm to work in real-time. This motion
+prediction system could either be its own component in an open loop system
+(like those found in warehouses), or the motion prediction could occur directly
+on the robot. If it is the latter, novel algorithms are going to need to be
+developed that are able to predict the motion of obstacles relatively quickly
+due to the limits set by the robot's processing power.
+
+\subsection{More Complex Models of Obstacle Behaviour}
+
+Obstacle behaviour in the current work was very simple. Obstacles are assumed
+to move along their prescribed trajectory with a set amount of uncertainty and
+are not affected by the actions of the robot or the other obstacles near it. It
+is also assumed that the obstacles will only follow one trajectory function and
+the current formulation does not account for obstacles with dynamic trajectory
+equations. The goal of future work would be to formalize a more complete model
+of the way an obstacle moves through the environment by incorporating reactive
+behaviour and multiple trajectory equations with associated spatio-temporal
+probabilities of switching between them. The reactive behaviour will encompass
+how the obstacle will react when other objects, either other obstacles or the
+robot being planned, move toward the obstacle or interfere with its trajectory.
+Likewise, the obstacles can be assumed to also be autonomous agents with their
+own planning algorithm. Accounting for this behaviour will result in a more
+comprehensive and realistic model of dynamic obstacles.
+
+\subsection{Multi-robot Coordination}
+
+\section{Conclusions}
 
 \end{document}
