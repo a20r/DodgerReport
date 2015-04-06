@@ -196,6 +196,19 @@ the time presented in the figures.
 
 \subsection{Variance}
 
+As with the other metrics, seeing how the variance reacts to an increasing
+amount of noise is equally as important. Fig.~\ref{fig:plot_std_comp_time}
+presents this relationship. The standard deviations for computational times for
+Dodger increase more rapidly than for the potential fields planner. This is
+because the Dodger had significantly larger computational times than the
+potential fields planner and would also have higher standard deviations.
+Likewise, the computational time standard deviations for Dodger are caused by
+both the randomness of the nodes used to create the probabilistic roadmap and
+the level of uncertainty injected into the obstacle trajectories. The standard
+deviation for the computational times for the potential fields planner is only
+dependent on the amount of noise in the obstacles movements since the algorithm
+does not have any random components.
+
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.48\linewidth]{figs/planner_std_avg_times_0}
