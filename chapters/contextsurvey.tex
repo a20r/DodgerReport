@@ -15,7 +15,9 @@ the last situation, a number of planners implementing different techniques have
 been created. Techniques include evolutionary computation on geometric
 structures in space-time to generate paths, safe interval path planning,
 sampling based space-time search using collision prediction, and probabilistic
-methods.
+methods. Note that this context survey only covers approaches that make use of
+models of obstacle behaviour and discards approaches that purely react to
+obstacle motion.
 
 \section{Evolutionary Algorithms}
 
@@ -46,10 +48,36 @@ dynamic obstacle will be at each time step along the path and checking for a
 collision.  Replanning using the evolutionary algorithm was implemented to
 account for obstacles deviating from their prescribed trajectories.
 
+Dunwei and Na used particle swarm optimization (PSO) to generate local paths
+around dynamic obstacles that are represented by trajectory
+bands~\cite{dunwei2011local}.  In order to account for the stochasticity in the
+obstacle trajectories, a distance around each obstacle's trajectory was used to
+describe how much the obstacle can deviate from it. Using these bands, an
+objective function was created that represents the safety of the generated
+path. PSO was used to generate a path that could minimize the objective
+function.
+
 \section{Safe Interval Path Planning}
+
+Narayanan et al.\ and Phillips et al.\ have developed algorithms for generating
+safe paths to guide a robot to a goal configuration by determining time
+intervals for which it would be safe to travel through certain areas in the
+search space and using a graph search algorithm to find a path to the goal that
+only intersects safe time intervals~\cite{asipp, sipp}.  Safe time intervals
+are determined by iterating through the trajectory of each obstacle and
+updating a query structure that can be used to check whether a certain space
+will be free for a given period of time. A lattice structure is used to
+discretize the search space and an A* variant, Anytime Reparing A* (ARA*) is
+used to search this lattice. This algorithm relies on the robot waiting at
+certain locations for areas to become free of obstacles before it is able move
+towards the goal.
 
 \section{Sampling in Space-time}
 
+\cite{van2006anytime} \cite{hsu2002randomized}
+
 \section{Probabilistic Methods}
+
+\cite{jensen2003motion} \cite{rodriguez2007framework}
 
 \end{document}
