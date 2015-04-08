@@ -5,4 +5,51 @@
 
 \label{chapter:contextsurvey}
 
+For years the planning community has been developing algorithms that allow
+robots to navigate through environments to reach a goal. As research
+progressed, so did the complexity of the environments that the robots needed to
+move through. It started with static obstacles which remain stationary for the
+entirety of the plan, then on to dynamic obstacles with stochastic motion, to
+dynamic obstacles that have predictable paths that planners can exploit. For
+the last situation, a number of planners implementing different techniques have
+been created. Techniques include evolutionary computation on geometric
+structures in space-time to generate paths, safe interval path planning,
+sampling based space-time search using collision prediction, and probabilistic
+methods.
+
+\section{Evolutionary Algorithms}
+
+Wang et al.\ used a genetic algorithm that would generate a path around the
+static and dynamic obstacles~\cite{wang2007mobile}. The obstacles were encoded
+by a set of vertices in a polygon. The chromosomes used in the genetic
+algorithms represented the paths that the robot can take to move to the goal
+where the path is comprised of the initial and goal points along with obstacle
+vertices.  The path generated for the robot would cling to the perimeter of an
+obstacle, until it could move towards the goal similar to the bug
+algorithm~\cite{weir}. The time at which the robot would reach each node was
+also encoded into the path. Moving obstacles were represented as static
+obstacles for a given time. Upon a sensed change in the environment such as a
+dynamic obstacle veering off its prescribed trajectory, replanning using the
+genetic algorithm was used to regenerate a collision free path.
+
+Smierzchalski and Michalewicz have also used an evolutionary approach where the
+chromosome represents the spatio temporal path in order to plan the movements
+of a ship in a harbour where the obstacles are other ships in a shipping
+lane~\cite{smierzchalski2005path}. The higher the evaluation for the chromosome
+(i.e.\ the path) the safer and shorter the path is. Unlike the work done by
+Wang et al.\, the path can be comprised of any point in the search space.  The
+obstacles were represented geometrically and the dynamic obstacles were
+represented by their initial configuration and velocity.  Since the path
+represented in a spatio-temporal fashion, the genetic algorithm is able to
+determine if a path will collide with a dynamic obstacle by deducing where the
+dynamic obstacle will be at each time step along the path and checking for a
+collision.  Replanning using the evolutionary algorithm was implemented to
+account for obstacles deviating from their prescribed trajectories.
+
+\section{Safe Interval Path Planning}
+
+\section{Sampling in Space-time}
+
+\section{Probabilistic Methods}
+
 \end{document}
