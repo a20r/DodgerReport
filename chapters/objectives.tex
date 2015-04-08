@@ -10,9 +10,10 @@
 The main objective of this work is to develop an algorithm that generates a
 quantitatively safe trajectory for a robot through an uncertain dynamic
 environment by utilizing information about how dynamic obstacles are going to
-move in the future. This can be simply stated as determining the curvature that
-minimizes the line integral over the dynamic cost distribution for a given set
-of dynamic obstacles.
+move in the future and to develop a formal probabilistic representation of
+stochastic dynamic obstacles. This can be simply stated as determining the
+curvature that minimizes the line integral over the dynamic cost distribution
+for a given set of dynamic obstacles.
 
 \begin{equation}
     J(C, A) = \int \limits_{C} \exp{\Big(P(x, y, t_0, t_m, A) + 1\Big)} \,
@@ -23,19 +24,19 @@ of dynamic obstacles.
 Eq.~\ref{eq:objective} describes the objective function, $J$, that needs to be
 minimized with respect to the curvature in order to determine the safest path
 through the environment. In Eq.~\ref{eq:objective}, the function $P$ is the
-cost surface for a given time interval and set of obstacles. More description
-about $P$ is given in Sec.~\ref{sec:cost} and is formally defined in
-Eq.~\ref{eq:prob}. More precisely, the objective of this work to develop an
-algorithm that will provide an approximate solution to
-Eq.~\ref{eq:argminobjective} which will return the minimum cost path through a
-environment for a given set of obstacles. The solution is described in
-Sec.~\ref{sec:design_planner}
+cost surface for a given time interval and set of obstacles and represents the
+cost of coming in collision with or moving towards the trajectory of any
+obstacle in the environment. More description about $P$ is given in
+Sec.~\ref{sec:cost} and is formally defined in Eq.~\ref{eq:prob}.  More
+precisely, the objective of this work to develop an algorithm that will provide
+an approximate solution to Eq.~\ref{eq:argminobjective} which will return a
+significantly low cost path through a environment for a given set of obstacles.
+The solution is described in Sec.~\ref{sec:design_planner}
 
 \begin{equation}
     \Gamma(A) = \argmin{C} \, J(C, A)
     \label{eq:argminobjective}
 \end{equation}
-
 
 \section{Secondary}
 
