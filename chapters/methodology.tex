@@ -94,7 +94,12 @@ $\gamma \geq 1$ which gives higher costs to times closer to $t_0$.
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.60\linewidth]{figs/normal_3d}
-    \caption{}
+
+    \caption{A plot depicting the three dimensional normal distribution
+    $\mathcal{N}(\cdot)$ that is used as a basis function for the obstacle cost
+distribution. The more red an area, the higher the cost. The more blue an area,
+the lower the cost.}
+
     \label{fig:normal_3d}
 \end{figure}
 
@@ -139,9 +144,10 @@ the environment because the velocity is at its maximum.
     \includegraphics[width=0.24\linewidth]{figs/agent_7}
     \includegraphics[width=0.24\linewidth]{figs/agent_8}
 
-    \caption{Cost distributions indicating the likelihood that an agent will be
-    at a certain location within a given time interval.  These figures show how
-this distribution changes over time (left to right, top to bottom)}
+    \caption{Cost distributions indicating the likelihood that a dynamic
+    obstacle will be at a certain location within a given time interval. These
+figures show how this distribution changes over time. The sequence progress
+from left to right, top to bottom}
 
     \label{fig:agent_cost}
 
@@ -337,7 +343,11 @@ roadmap with 300 nodes.
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.8\linewidth]{figs/roadmap}
-    \caption{}
+
+    \caption{An example of a probabilistic roadmap generated in free space
+    without the presence of obstacles. The nodes are represented by the circles
+and the red line as the edges between the nodes.}
+
     \label{fig:prm}
 \end{figure}
 
@@ -506,7 +516,13 @@ obstacles when they are all near each other on the right side of the scene.
     \includegraphics[width=0.32\linewidth]{figs/tree_6}
     \includegraphics[width=0.32\linewidth]{figs/tree_7}
     \includegraphics[width=0.32\linewidth]{figs/tree_8}
-    \caption{}
+
+    \caption{A depiction of the search tree generation for a given
+    probabilistic roadmap. The $x$ and $y$ axes represent the $x$ and $y$
+location of the node, and the vertical axis represents time. The sequence
+progress from left to right, up to down. The final image in sequence also shows
+the path taken by the robot in red.}
+
     \label{fig:tree}
 \end{figure}
 
@@ -521,7 +537,12 @@ obstacles when they are all near each other on the right side of the scene.
     \includegraphics[width=0.32\linewidth]{figs/ex_agent_6}
     \includegraphics[width=0.32\linewidth]{figs/ex_agent_7}
     \includegraphics[width=0.32\linewidth]{figs/ex_agent_8}
-    \caption{}
+
+    \caption{A sequence of images showing the progression of the cost
+    distribution for the set of dynamic obstacles over time used for the search
+tree shown in Fig.~\ref{fig:tree}. The sequence progresses from left to right,
+up to down.}
+
     \label{fig:ex_agents}
 \end{figure}
 

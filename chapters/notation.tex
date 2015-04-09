@@ -1,0 +1,35 @@
+
+\begin{document}
+
+\chapter*{Notation}
+
+\begin{table}[h!]
+
+    \centering
+
+    \begin{tabular}{l|l}
+    \hline
+    Notation                                              & Description                                                                          \\ \hline
+    $a$                                                 & A dynamic obstacle                                                                   \\
+    $A$                                                 & Set of dynamic obstacles                                                             \\
+    $P_a(\cdot)$                              & Cost distribution for a single dynamic obstacle, $a$                               \\
+    $P(\cdot)$                                 & Cost distribution for a set of dynamic obstacles                                     \\
+    $\mathcal{N}(\cdot)$            & Three dimensional normal distribution                                                \\
+    $\dot{\zeta}(\cdot)$   & Velocity function for a dynamic obstacle                                             \\
+    $\zeta(\cdot)$                    & Predicted trajectory of a dynamic obstacle                                           \\
+    $\tilde{\zeta}(\cdot)$ & Observed trajectory for a dynamic obstacle                                           \\
+    $C(\cdot)$                                 & Dynamic edge cost for the probabilistic roadmap excluding revisiting penalty         \\
+    $TC(\cdot)$                                & Dynamic edge cost for the probabilistic roadmap including revisiting penalty         \\
+    $I$                                                 & Initial configuration of a dynamic obstacle                                          \\
+    $\epsilon$                                 & Amount of noise injected into a dynamic obstacle's trajectory                        \\
+    $\xi$                                      & Last configuration used for trajectory prediction                                    \\
+    $T$                                                 & Last time used for trajectory prediction                                             \\
+    $\alpha$                                   & Multiplicative weight for the variance in $\mathcal{N}(\cdot)$ \\
+    $\beta$                                    & Additive weight for the variance in $\mathcal{N}(\cdot)$       \\
+    $\gamma$                                   & Exponential constant used for weighting basis functions in $P$                     \\
+    $\psi$                                     & Multiplicative weight for the cost distribution in $TC$                            \\
+    $\omega$                                   & Multiplicative weight for revisiting a node in $TC$                                \\
+    \end{tabular}
+\end{table}
+
+\end{document}
