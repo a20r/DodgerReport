@@ -299,6 +299,8 @@ constructing a probabilistic roadmap in Algo.~\ref{algo:prm}.
     \algorithmicrequire{
         \\$n$: Maximum number of samples
         \\$d$: Maximum distance between neighbouring nodes
+        \\$w$: Height of the scene
+        \\$w$: Width of the scene
         \\$O$: Set of obstacles
     }
     \\\algorithmicensure{
@@ -444,8 +446,20 @@ formally in Algo.~\ref{algo:search}.
 % Algorithm to search the graph
 \begin{algorithm}[ht]
     \caption{$\Acronym{tBestFS}(V, E, R, A, p, g, T)$}
-    % \algorithmicrequire{}
-    % \\\algorithmicensure{}
+    \algorithmicrequire{
+        \\$V$: Set of vertices
+        \\$E$: Set of edges
+        \\$R$: Goal radius
+        \\$A$: Set of dynamic obstacles
+        \\$p$: Starting point of the robot
+        \\$g$: Goal point for the robot
+        \\$T$: Time at which the search should start
+    }
+    \\\algorithmicensure{
+        \\A temporal path from the initial configuration of the robot
+        to the goal configuration
+    }
+
     \label{algo:search}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}
@@ -724,8 +738,18 @@ entry point for the Dodger algorithm.
         \\$d$: Maximum distance between neighbouring nodes in the roadmap
         \\$w$: Width of the scene
         \\$h$: Height of the scene
+        \\$\delta$: Minimum obstacle deviation for replanning
+        \\$p$: Starting point of the robot
+        \\$g$: Goal point for the robot
+        \\$O$: Set of static obstacles
+        \\$A$: Set of dynamic obstacles
+        \\$R$: Goal radius
     }
-    \\\algorithmicensure{}
+    \\\algorithmicensure{
+        \\A temporal path from the initial configuration of the robot
+        to the goal configuration with replanning.
+    }
+
     \label{algo:path}
     \begin{algorithmic}[1]
         \setcounter{ALC@line}{0}

@@ -105,6 +105,17 @@ potential field planner generates a path through the environment.
 \begin{algorithm}[ht]
 
     \caption{$\Function{PF}(q, g, O, A, R)$}
+    \algorithmicrequire{
+        \\$q$: Configuration of the robot
+        \\$g$: Goal configuration
+        \\$O$: Set of static obstacles
+        \\$A$: Set of dynamic obstacles
+        \\$R$: Goal radius
+    }
+    \\\algorithmicensure{
+        \\A temporal path from the initial configuration of the robot
+        to the goal configuration using potential fields.
+    }
 
     \label{algo:pf}
     \begin{algorithmic}[1]
@@ -171,8 +182,12 @@ Algo.~\ref{algo:diprm}.
 \begin{algorithm}[ht]
     \caption{$\Function{TemporalRoadmap}(N, d, \delta t, s, p, O, A)$}
     \algorithmicrequire{
-        \\$n$: Maximum number of samples
+        \\$N$: Maximum number of samples
         \\$d$: Maximum distance between neighbouring nodes
+        \\$\delta t$: Maximum time difference between nodes
+        \\$s$: Speed of the robot
+        \\$p$: Initial configuration of the robot
+        \\$A$: Set of dynamic obstacles
         \\$O$: Set of obstacles
     }
     \\\algorithmicensure{
