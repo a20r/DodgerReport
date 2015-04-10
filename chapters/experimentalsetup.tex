@@ -26,7 +26,7 @@ In order to judge how the developed planner compares to a standard algorithm
 developed to plan in stochastic dynamic environments, a slight variant to the
 potential fields planner described in Algo.~\ref{algo:pf} was implemented. The
 difference is that the implemented potential fields planner used a different
-repulsive potential function described in Eq.~\ref{eq:betterrep}.
+repulsive potential function that is described in Eq.~\ref{eq:betterrep}.
 
 \begin{equation}
     U_{\Var{rep}}(p, t, A) = \max_{a \in A} \,
@@ -103,13 +103,14 @@ safety of both the potential fields planner and the developed planner, this
 metric can be used to quantify how information about the motion of dynamic
 obstacles can either improve or have no effect on the generated paths.
 
-The last metric used to measure the safety of a generated paths is the average
-cost associated with the robot along the path. This metric does not provide the
-same indication of safety as in Eq.~\ref{eq:cost_metric} because the overall
-safety of a path is not just the average safeness along the path. For instance
-if the majority of a path taken by a robot has a relatively low cost, but then
-the robot comes into collision with an along the path, this path cannot be
-labelled as safe. However, this metric combined with the metrics described in
+The last metric used to measure the safety of a generated path is the average
+cost associated with the robot along the path as determined by the cost
+distribution. This metric does not provide the same indication of safety as in
+Eq.~\ref{eq:cost_metric} because the overall safety of a path is not just the
+average safeness along the path.  For instance if the majority of a path taken
+by a robot has a relatively low cost, but then the robot comes into a collision
+with an obstacle along the path, this path cannot be labelled as safe.
+However, this metric combined with the metrics described in
 Eq.~\ref{eq:cost_metric} and Eq.~\ref{eq:md_metric} can be used to gauge the
 level of safety for a given path. This last metric is described formally in
 Eq.~\ref{eq:avg_cost_metric}.

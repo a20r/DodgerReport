@@ -51,10 +51,11 @@ the search is more directed. There would have to be some constraints used in
 this heuristic, for instance, its influence in the priority of a node in the
 queue because the safeness of a path would be sacrificed in return for
 decreased computational time. Likewise, decreasing the average degree of a node
-in the probabilistic roadmap whilst keeping it one connected component would
-limit the size of the search tree and thus computational time. This could be
-done by using alternative roadmap construction methods such as connecting the
-$k$-nearest neighbours instead of all nodes within a given radius.
+in the probabilistic roadmap whilst ensuring that the probabilistic roadmap is
+one connected component would limit the size of the search tree and thus the
+computational time.  This could be done by using alternative roadmap
+construction methods such as connecting the $k$-nearest neighbours instead of
+all nodes within a given radius.
 
 \subsection{Variable Speed and Wait Time}
 
@@ -87,10 +88,10 @@ more robust.
 
 \subsection{Real World Experiments}
 
-Since this is a project is concerned with moving a physical robot through an
-environment, an important piece of\ future work would be to conduct experiments
+Since this project is concerned with moving a physical robot through an
+environment, an important piece of future work would be to conduct experiments
 using a physical robot in a real-world scenario. This would mean adapting the
-path generated for the robot in to a list of control inputs that would account
+path generated for the robot into a list of control inputs that would account
 for the physics of the robot to move it to the goal. Since the project provides
 a sequence of spatio-temporal waypoints, a specialized controller can be
 created for different mobile robots that could follow the waypoints generated.

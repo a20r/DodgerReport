@@ -16,10 +16,10 @@ implementation was completed for the final design described in
 Sec.~\ref{sec:finaldesign}, it was discovered that Python could not produce
 solution paths (without replanning) through dynamic environments in a real-time
 scenario. Since Python could not search the graph within an acceptable amount
-of time, it could be only used for \emph{a priori} planning and therefore could
+of time, it could only be used for \emph{a priori} planning and therefore could
 not be used in stochastic environments in which replanning would be needed. Due
 to this drawback, the author decided to rewrite the entire implementation in
-C++. Since this initial attempt is complete, it is publicly available
+C++.  Since this initial attempt is complete, it is publicly available
 at~\cite{racer}.
 
 \section{Final}
@@ -34,7 +34,7 @@ motion planning.  The system has an easy import mechanism and several examples
 on how to use the different planners that have been implemented.
 
 In order to visualize the paths that the planner has generated, the C++ code
-can exports the paths of the robot and the dynamic obstacles to a JSON file and
+can export the paths of the robot and the dynamic obstacles to a JSON file and
 a Python script then can read and parse the generated JSON and display the
 paths using either Matplotlib or RViz. Matplotlib is an open source library for
 creating plots from data~\cite{matplotlib}. It is very similar to Matlab or
@@ -43,9 +43,9 @@ Robotic Operating System (ROS) which can render dynamic scenes in three
 dimensions and can visualize native geometrical and navigation messages from
 ROS~\cite{ros}.  Since the paths are exported to JSON, a standard format with
 parsers in many languages, third party software can be developed that can parse
-the generated JSON file and analysis or visualized the generated paths.
-Likewise, the \Name library can be imported by a third party program to control
-robots from the generated paths or to visualize the paths using other
+the generated JSON file and analyze or visualize the generated paths.
+Likewise, the Dodger library can be imported by a third party program to
+control robots from the generated paths or to visualize the paths using other
 visualization tools such as OpenGL. A diagram of this tool-chain is shown in
 Fig.~\ref{fig:software}.
 

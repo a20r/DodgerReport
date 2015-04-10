@@ -7,7 +7,7 @@
 
 As described briefly in Sec.~\ref{sec:finaldesign}, the final planner design
 uses a probabilistic roadmap to capture the connectivity of the environment and
-uses a novel variant of best first search to find a safe, low cost path the
+uses a novel variant of best first search to find a safe, low cost path to the
 goal. This approach is called Dodger. This section describes the algorithm as
 well as formalizes the definition of a dynamic obstacle and its associated cost
 distribution and motion.
@@ -37,12 +37,12 @@ Eq.~\ref{eq:obs_observed} where $\mathcal{U}$ is a uniform distribution, $\xi$
 is the current configuration used for prediction, and $T$ is the time that the
 obstacle was in configuration $\xi$.  The variables $\xi$ and $T$ are dynamic
 variables and are updated throughout the execution of the algorithm and are
-used to determine when it is appropriate for the algorithm replan and find a
+used to determine when it is appropriate for the algorithm replans and finds a
 new path through the environment using more up to date information. This is
 explained in Sec.~\ref{sec:design_planner}. The variables $\xi$ and $T$ are
 initially set to $I$ and $0$ respectively. It is assumed that the robot has
 access to this information about the dynamic obstacles and will use it to
-safely around them.  Information such as the initial configuration and the
+safely move around them. Information such as the initial configuration and the
 velocity equation for each dynamic obstacle are assumed to be determined by an
 external system that is either using a machine learning technique to deduce
 these properties by using information about where the dynamic obstacle has been
@@ -66,9 +66,9 @@ t_0$ and the lowest cost with the highest uncertainty will be at $t = t_m$.
 Under this assumption, the cost function models how the obstacle may diverge
 from its current trajectory as time increases. With these assumptions, the cost
 function, $P_a: \mathbb{R}^2 \times (\mathbb{R}^+)^2 \rightarrow
-\mathbb{R}$, represents represents the cost surface for a given dynamic
-obstacle, $a$,  within a given time interval. Eq.~\ref{eq:singleprob} formally
-defines the cost function for a single obstacle.
+\mathbb{R}$, represents the cost surface for a given dynamic obstacle, $a$,
+within a given time interval. Eq.~\ref{eq:singleprob} formally defines the cost
+function for a single obstacle.
 
 % Single agent PDF
 
@@ -128,7 +128,7 @@ velocity does not remain constant in the example, the cost distribution
 elongates an shrinks based on the acceleration of the obstacle. For instance,
 in the first and last images in Fig.~\ref{fig:agent_cost}, the cost is
 contained to a small area due to the velocity equations of the obstacles being
-at their minimum and in the fourth image,the cost is more spread out through
+at their minimum and in the fourth image, the cost is more spread out through
 the environment because the velocity is at its maximum.
 
 \begin{figure}[h!]
@@ -158,7 +158,7 @@ from left to right, top to bottom}
 \label{sec:motion}
 
 The motion of a dynamic obstacle is defined by the velocity equation, the
-initial configuration, the amount of uncertainty. Defining the obstacle's
+initial configuration, and the amount of uncertainty. Defining the obstacle's
 trajectory in terms of its velocity makes it easier to model when creating
 scenes. The equation of motion for the dynamic obstacle is shown in
 Eq.~\ref{eq:obs_pred}.
@@ -178,8 +178,8 @@ In Eq.~\ref{eq:obs_pred}, $\tilde{\zeta_a}$ represents the observed trajectory
 of the obstacle whereas $\zeta_a$ corresponds to the predicted trajectory of
 the obstacle. This disambiguation is needed because the planner needs to be
 able to extrapolate the future movements of a dynamic obstacle. The variables,
-$\xi_a$ and $T_a$ are dynamically updated when the planner replans and are
-initially set to $I_a$ and $0$ respectively. The need for this and how it is
+$\xi_a$ and $T_a$ are initially set to $I_a$ and $0$ respectively and are
+dynamically updated when the algorithm replans. The need for this and how it is
 designed will be discussed in Sec.~\ref{sec:design_planner}
 
 For the experiments, the motion of the obstacles is simulated by adding a
@@ -250,8 +250,8 @@ dictate their behaviour~\cite{rus, cmu, boulder, edi1, edi2, keeper}. Also, as
 described in Sec.~\ref{sec:plannerdiscussion}, the planner does not need to
 have a perfectly precise equation for the obstacles' motion because the planner
 has the ability to construct a new plan through the environment if the
-prediction of the obstacles' motion does not accurately depict where the
-obstacle actually is.
+prediction of the obstacles' motion does not accurately depict where the actual
+location of the obstacle.
 
 \section{Planning Algorithm}
 
@@ -357,9 +357,9 @@ To search the generated two dimensional probabilistic roadmap in space-time, a
 novel best first search ($\Acronym{tBestFS}$) algorithm has been developed that
 creates a search tree that expands the current node not only in space but also
 in time until the current node is within an acceptance radius the goal. This
-algorithm works by using priority queue to store to store the expanded nodes.
-The priority is based on two things, how many times a two dimensional node in
-the probabilistic roadmap has been expanded and the cost to reach the node in
+algorithm works by using a priority queue to store the expanded nodes. The
+priority is based on two things, how many times a two dimensional node in the
+probabilistic roadmap has been expanded and the cost to reach the node in
 space-time in the queue. A dictionary indexed by the node and mapped to an
 integer is used to keep track of how many times the node has been visited. The
 cost between two nodes in space-time, $(i, t)$ and $(j, t')$ is defined by the
@@ -630,9 +630,9 @@ always have a value less than infinity for all permissible parameters.
     between nodes since no two nodes are an infinite distance away. For the
     latter, $P$ can only tend to infinity if the normal distribution,
     $\mathcal{N}$ reaches infinity. This is only possible if the variance
-    approaches 0. However the variance cannot reach $0$ in case because the
-    constant $\beta$ is always greater than zero. Therefore it is impossible
-    for the cost along an edge, $C$, to tend towards infinity.
+    approaches 0. However the variance cannot reach $0$ in this case because
+    the constant $\beta$ is always greater than zero. Therefore it is
+    impossible for the cost along an edge, $C$, to tend towards infinity.
 
 \end{proof}
 
@@ -768,24 +768,24 @@ obstacles and re-searching the probabilistic roadmap using $\Acronym{tBestFS}$,
 safer overall paths can be generated. It is possible to regulate the number of
 times the planner will need to replan and thus the safety of the plan by
 adjusting the value for $\delta$. The larger the value for $\delta$, the more
-the obstacles the will need to diverge from the prescribed trajectories in
-order to replan and vice-versa.
+the obstacles will need to diverge from the prescribed trajectories in order
+for the planner to initiate the replanning sequence and vice-versa.
 
-\subsubsection{Completeness}
-
-\begin{theorem}
-
-    The robot will always reach the goal in a finite amount of time given the
-    proposed replanning scheme outlined in Algo.~\ref{algo:path} for $\delta >
-    0$.
-
-\end{theorem}
-
-\begin{proof}
-
-
-
-\end{proof}
+% \subsubsection{Completeness}
+%
+% \begin{theorem}
+%
+%     The robot will always reach the goal in a finite amount of time given the
+%     proposed replanning scheme outlined in Algo.~\ref{algo:path} for $\delta >
+%     0$.
+%
+% \end{theorem}
+%
+% \begin{proof}
+%
+%
+%
+% \end{proof}
 
 \subsection{Discussion}
 
@@ -805,7 +805,7 @@ potential fields, with the added benefit of provable completeness and not being
 a solely reactive planner. Likewise, the replanning ability allows the
 information given to the planner about the motion of the obstacles not to be
 perfect. Even if the equations of motion that the motion prediction system
-provides in now way describe the actual motion of the obstacles, the algorithm
+provides in no way describe the actual motion of the obstacles, the algorithm
 will simply replan at every time step and instead of using the cost
 distributions to determine paths through the environment, the planner will
 simply move to the next best node in the probabilistic roadmap. This means that

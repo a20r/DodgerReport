@@ -6,11 +6,11 @@
 \label{chapter:design}
 
 As with any research project, many different attempts were made to come up with
-a solution to the objectives state in Ch.~\ref{chapter:objectives}. Three
+a solution to the objectives stated in Ch.~\ref{chapter:objectives}. Three
 different techniques were developed in sequence and one technique was theorized
 but never implemented to try and provide a solution that best matched the
 sought behaviour for the planner.  The theorized technique included using a bug
-algorithm~\ref{weir} in space-time to find a path through the dynamic
+algorithm~\cite{weir} in space-time to find a path through the dynamic
 environment.  The first attempt was a simple potential field that would take
 into account the predicted trajectories of the obstacles, and leverage this
 information to provide safer paths. The second attempt included generating a
@@ -20,7 +20,7 @@ costs paths through the environment. The last attempt, and the most successful
 is a planner that uses a two dimensional probabilistic roadmap to sample the
 search space and then uses Best First Search to expand nodes in space-time to
 determine the minimum cost path through the dynamic environment.  These four
-attempts are described individually and more detail in this section.
+attempts are described individually and in more detail in this section.
 
 \section{Space-time Bug Algorithm}
 
@@ -157,7 +157,7 @@ weighted graph, $(V, E)$, that represents the spatio-temporal connectivity of
 the search space by randomly sampling points and connecting them such that if
 $((i, t), (j, t')) \in E$, then both $i$ and $j$ must not collide with an
 obstacle at times $t$ and $t'$ respectively, $||i - j|| \leq d$ where $d$
-indicates the maximum distance away connected nodes can be from one another,
+indicates the maximum distance between connected nodes can be from one another,
 there must not be a collision with any obstacle along the edge from $i$ and $j$
 in the time interval $[t, t']$, $|t - t'| < \delta t$, and $t < t'$~\cite{prm,
 stprm}.  For the attempted space-time PRM, each node would be a vector, $(x, y,
@@ -224,11 +224,11 @@ algorithms seek to find the path with minimum combined weight through the
 graph, these algorithms are biased to return paths with a smaller number of
 vertices.  This is because paths with a larger number of vertices will have a
 higher overall weight. Since shortest path algorithms try to minimize this
-overall weight, paths which may be safer but may take longer not be returned by
-these algorithms.
+overall weight, paths which may be safer but may take longer may not be
+returned by these algorithms.
 
 To overcome this, instead of searching over the entire graph, the search could
-be occur over the minimum spanning tree of the graph.  Since the roadmap is a
+occur over the minimum spanning tree of the graph.  Since the roadmap is a
 directed graph, Edmonds' algorithm~\cite{edmonds} was used since other minimum
 spanning tree algorithms such as Kruskal's algorithm~\cite{kruskal} and Prim's
 greedy algorithm~\cite{prim} only work on undirected graphs. Using the minimum
@@ -246,10 +246,9 @@ starting location in space-time. If the number of nodes is too small the, the
 goal may not even be in the graph, and thus the robot will never reach it.
 Also, the less nodes in the graph the less optimal the generated path is, but
 the more nodes added to the graph, the more computationally difficult it
-becomes to search. Lastly, the main flaw with this approach is that biases the
-sampling to areas that already have a high sample density and therefore may not
-sample nodes in the goal area without having a high number of nodes in the
-graph.
+becomes to search. Lastly, the main flaw with this approach is that it biases
+the sampling to areas that already have a high density of and therefore may not
+sample nodes in the goal region until sufficiently many samples have been made.
 
 \section{Probabilistic Roadmap With Best First Search}
 

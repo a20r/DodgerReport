@@ -5,16 +5,16 @@
 
 \label{chapter:introduction}
 
-Path planning is very important problem in robotics and computer science. It is
-the problem of generating a path through an environment that if followed by a
-robot, would move the robot from some initial configuration to a goal
+Path planning is a very important problem in robotics and computer science. It
+is the problem of generating a path through an environment that if followed by
+a robot, would move the robot from some initial configuration to a goal
 configuration without coming into collision with any obstacles on the way. This
 problem may seem easy for a human to solve, just walk around the obstacles and
 get to the goal, but for a robot it can be extremely difficult. As humans, we
 have amazing perception abilities and an unparalleled ability to assess the
 risk we perceive and plan around it. These capabilities are not as developed in
 artificial intelligence. Humans can walk around environments which are dynamic
-and uncertain and (usually) reach wherever they were going without running into
+and uncertain and (usually) reach wherever they are going without running into
 moving obstacles or hitting walls. This is because as humans, we can determine
 automatically where things are going to be in the future by looking at their
 past locations and use this information to build safe, collision free paths to
@@ -22,12 +22,12 @@ our goals. Imagine you are driving a car and reach an intersection, you stop
 because you see a car coming from the right. You have a choice to either move
 forward crossing over the future path of the other car, or to wait for the car
 to pass. By judging how far the car is away from you and how fast it is moving,
-you can automatically determine whether or not is safe to cross the road.
-Likewise, imagine you are waiter in a busy, hectic restaurant. You have to
+you can automatically determine whether or not it is safe to cross the road.
+Likewise, imagine you are a waiter in a busy, hectic restaurant. You have to
 bring an order to hungry customers. You are able to bring the customers the
 food by predicting where other waiters and customers are going to be whilst you
-move the environment in order to avoid spilling the food and sacrificing your
-tip. Our brains do this planning and prediction automatically in order to
+move through environment in order to avoid spilling the food and sacrificing
+your tip. Our brains do this planning and prediction automatically in order to
 generate safe paths through stochastic dynamic environments. The aim of this
 project is to use given information about the future motion of obstacles by an
 external system in order to generate safer paths than state of the art planners
@@ -55,8 +55,8 @@ describe its connectivity by sampling plausible configurations and how to move
 between them.  With the discretization, usually in the form of a graph or a
 tree, paths to the goal are extracted using shortest path algorithms which seek
 to minimize a given objective function. These approaches are becoming
-exceedingly popular due their running time and how they are able to scale for
-high dimensional systems.
+exceedingly popular due to their running time and how they are able to scale
+for high dimensional systems.
 
 This project aims to utilize developments in motion planning, particularly
 sampling based motion planning in order to move a robot safely from an initial
@@ -75,13 +75,14 @@ because if robots are interacting with humans, the robot must move safely in
 order not to come into contact with and hurt humans as well as minimize the
 damage that can possibly occur to itself. Likewise, imagine a situation where a
 robot is deployed to an environment for a long period of time. By generating
-safe paths (i.e. paths that have a insignificant chance of colliding with an
-obstacle), the robot can be deployed for longer without maintenance, because it
-would be less likely that it would get damaged as a result of a collision. A
-solution to this problem can provide safer paths for the operating environment
-and the robot by leveraging information that can be extracted about where
-obstacles are moving.  Likewise, this problem is important because there exists
-systems that are able to predict the motions of obstacles, however there is a
-lack of systems that use this knowledge to generate safe paths.
+safe paths (i.e. paths that have an insignificant chance of colliding with an
+obstacle), the robot can be deployed for longer periods of time without
+maintenance, because it would be less likely that it would get damaged as a
+result of a collision. A solution to this problem can provide safer paths for
+the operating environment and the robot by leveraging information that can be
+extracted about where obstacles are moving.  Likewise, this problem is
+important because there exists systems that are able to predict the motions of
+obstacles, however there is a lack of systems that use this knowledge to
+generate safe paths.
 
 \end{document}
