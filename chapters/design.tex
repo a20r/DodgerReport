@@ -14,44 +14,44 @@ algorithm~\cite{weir} in space-time to find a path through the dynamic
 environment.  The first attempt was a simple potential field that would take
 into account the predicted trajectories of the obstacles, and leverage this
 information to provide safer paths. The second attempt included generating a
-probabilistic roadmap in relative space-time and using stock graph search
-algorithms such as Dijkstra's algorithm and Edmonds' algorithm to derive low
-costs paths through the environment. The last attempt, and the most successful
-is a planner that uses a two dimensional probabilistic roadmap to sample the
-search space and then uses Best First Search to expand nodes in space-time to
-determine the minimum cost path through the dynamic environment.  These four
+probabilistic roadmap in space-time and using stock graph search algorithms
+such as Dijkstra's algorithm and Edmonds' algorithm to derive low costs paths
+through the environment. The last attempt, and the most successful is a planner
+that uses a two dimensional probabilistic roadmap to sample the search space
+and then uses a variant of best first search to expand nodes in space-time to
+find the low cost paths through the stochastic dynamic environment.  These four
 attempts are described individually and in more detail in this section.
 
 \section{Space-time Bug Algorithm}
 
-The initial design for the algorithm was to use a bug algorithm that operates
-in space-time. Bug algorithms work by moving the robot towards the goal until
-it reaches an obstacle. Once an obstacle has been reached, the bug algorithm
-will move the robot along the edge of the obstacle until the obstacle is no
-longer between the robot and the goal. The robot will then move to the goal and
-repeat this process if necessary. An example of this algorithm in practice is
-shown in Fig.~\ref{fig:bug}. This proposed design was going to treat the
-dynamic obstacles moving in two dimensions as three dimensional static
-obstacles in three dimensions where time is the third dimension. The robot
-would use the bug algorithm to move through the environment in three
-dimensions. A constraint would have been added to the movement of the robot
-which would be that it could not move backward in the last dimension, time.
-The benefit of this design is that completeness could be proven geometrically,
-it is a computationally simple algorithm, and it could be easily implemented
-for use on a mobile robot. This design was not implemented because of several
-fundamental flaws discovered during the design phase. Firstly, by thinking of
-dynamic obstacles as static obstacles in space-time, the robot would have to
-rely on perfect information about the movement of the dynamic obstacles, i.e.
-there could be very little uncertainty about the movements or predictions of
-the movements in the dynamic obstacles. For the planner to be able to handle
-uncertainty in the motion of the obstacles \emph{a priori}, obstacles would
-need to be increased in their size (emphasizing the possible positions of the
-dynamic obstacles) as time increases. This could lead to possibly unrecoverable
-configurations because obstacles in space-time could be seen as overlapping
-thus not providing a collision free area for the robot to move through. It was
-ultimately decided not to continue with this design but instead to leverage a
-more stochastic and probabilistic definition of the dynamic obstacles and to
-use planning techniques more suited for stochastic dynamic environments.
+The initial design for this project was to use a bug algorithm that operates in
+space-time. Bug algorithms work by moving the robot towards the goal until it
+reaches an obstacle. Once an obstacle has been reached, the bug algorithm will
+move the robot along the edge of the obstacle until the obstacle is no longer
+between the robot and the goal. The robot will then move to the goal and repeat
+this process if necessary. An example of this algorithm in practice is shown in
+Fig.~\ref{fig:bug}. This proposed design was going to treat the dynamic
+obstacles moving in two dimensions as static obstacles in three dimensions
+where time is the third dimension. The robot would use the bug algorithm to
+move through the environment in three dimensions. A constraint would have been
+added to the movement of the robot which would be that it could not move
+backward in the last dimension, time.  The benefit of this design is that
+completeness could be proven geometrically, it is a computationally simple
+algorithm, and it could be easily implemented for use on a mobile robot. This
+design was not implemented because of several fundamental flaws discovered
+during the design phase. Firstly, by thinking of dynamic obstacles as static
+obstacles in space-time, the robot would have to rely on perfect information
+about the movement of the dynamic obstacles, i.e.  there could be very little
+uncertainty about the movements or predictions of the movements in the dynamic
+obstacles. For the planner to be able to handle uncertainty in the motion of
+the obstacles \emph{a priori}, obstacles would need to be increased in their
+size (emphasizing the possible positions of the dynamic obstacles) as time
+increases. This could lead to possibly unrecoverable configurations because
+obstacles in space-time could be seen as overlapping thus not providing a
+collision free area for the robot to move through. It was ultimately decided
+not to continue with this design but instead to leverage a more stochastic and
+probabilistic definition of the dynamic obstacles and to use planning
+techniques more suited for stochastic dynamic environments.
 
 \begin{figure}[h!]
 
@@ -71,9 +71,9 @@ is courtesy of Dr.\ Erion Plaku.}
 
 \label{sec:costpf}
 
-Using potential fields was an initial attempt to plan through uncertain dynamic
-environments since they are frequently used to plan around dynamic obstacles
-due to their reactive behaviour~\cite{pf, wallar_taros_2013,
+Using a potential fields planner was an initial attempt to plan through
+uncertain dynamic environments since they are frequently used to plan around
+dynamic obstacles due to their reactive behaviour~\cite{pf, wallar_taros_2013,
 wallar_ssci_2014_boids}.  The difference between the standard potential field
 implementations and the one developed for this project was that the repulsive
 obstacle field at a position $(x, y)$ was proportional to the cost distribution
@@ -217,7 +217,7 @@ surface for a given set of dynamic obstacles with a time interval of $[i_t,
 j_t]$.  The notion of a cost distribution is described in
 Ch.~\ref{chapter:methodology} and the formal equation for this line integral is
 given in Eq.~\ref{eq:cost}.  This space-time roadmap approach yielded mixed
-results.  The robot would sometimes evade the obstacles, but with the
+results.  The robot would sometimes evade the obstacles, but with the same
 incidence, the planner would lead the robot directly into a collision with a
 dynamic obstacle. After some testing, it was discovered that since graph search
 algorithms seek to find the path with minimum combined weight through the
@@ -240,15 +240,16 @@ obstacles.
 
 This approach using a three dimensional probabilistic roadmap did not work in
 practice regardless of the search algorithm because of the number of nodes that
-need to be sampled in space-time in order for it to be effective.  The roadmap
-indicates where in the environment the robot is able to travel to from a
+need to be sampled in space-time in order for it to be effective.  Nodes in the
+roadmap indicate where in the environment the robot is able to travel to from a
 starting location in space-time. If the number of nodes is too small the, the
 goal may not even be in the graph, and thus the robot will never reach it.
 Also, the less nodes in the graph the less optimal the generated path is, but
 the more nodes added to the graph, the more computationally difficult it
 becomes to search. Lastly, the main flaw with this approach is that it biases
-the sampling to areas that already have a high density of and therefore may not
-sample nodes in the goal region until sufficiently many samples have been made.
+the sampling to areas that already have a high sample density and therefore may
+not sample nodes in the goal region until sufficiently many samples have been
+made.
 
 \section{Two Dimensional Probabilistic Roadmap With Temporal Best First Search}
 
