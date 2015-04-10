@@ -39,7 +39,7 @@ approach~\cite{evosurvey} where the chromosome represents the spatio temporal
 path in order to plan the movements of a ship in a harbour where the obstacles
 are other ships in a shipping lane~\cite{smierzchalski2005path}.  The higher
 the evaluation for the chromosome (i.e.\ the path) the safer and shorter the
-path is. Unlike the work done by Wang et al.\, the path can be comprised of any
+path is. Unlike the work done by Wang et al.\ the path can be comprised of any
 point in the search space.  The obstacles were represented geometrically and
 the dynamic obstacles were represented by their initial configuration and
 velocity.  Since the path represented in a spatio-temporal fashion, the genetic
@@ -99,8 +99,8 @@ and researching the graph for a path to the goal.
 \section{Probabilistic Methods}
 
 Jensen et al.\ developed an algorithm that uses a probabilistic obstacle model
-to represent and employs a gradient decent method to find path to the
-goal~\cite{jensen2003motion}.  A gradient decent approach tries to minimize the
+to represent and employs a gradient decent method to find a path to the
+goal~\cite{jensen2003motion}. A gradient decent approach tries to minimize the
 probability of the robot coming into collision with an obstacle along the path.
 This method is general but assumes that the robot has a sensing radius and is
 able to move in the direction that has the lowest probability of collision.
@@ -127,32 +127,33 @@ about the static obstacles such that no edge is in collision with an obstacle.
 The main limitation of the developments described is that there is no solution
 that uses the obstacles' known stochastic trajectories to build probabilistic
 representations and use these representations to build complete low cost paths.
-Some of algorithms currently either assume that the planner only knows that the
-obstacles will move randomly around a point~\cite{rodriguez2007framework} or
-that the obstacles will move along a fixed trajectory~\cite{hsu2002randomized},
-and if they deviate, a new plan is developed. Hsu et al.\ assumed perfect
-information about the obstacle trajectories to build an initial path through
-the environment, and if the information was incorrect or the obstacles deviate
-from their prescribed trajectories, the planner develops a new route to the
-goal. Berg et al.\ increased the size of the dynamic obstacles in space time to
-account for random motion, but to plan around them, represented the obstacles
-as static objects in space-time thus not devising a cost metric for their
-motion. Likewise, the approaches that used safe interval path
-planning~\cite{asipp, sipp}, did not build probabilistic models of the
-obstacles, but instead determined intervals at which it would be safe to travel
-through certain areas and is thus heavily reliant on the robot waiting at
-certain locations. The evolutionary approaches described were geometric and
-also did account for the stochasticity in the known trajectories of the dynamic
-obstacles. The one approach that did create probabilistic models of the dynamic
-obstacles~\cite{jensen2003motion} employed a gradient decent method similar to
-that of potential fields that is described in Sec.~\ref{sec:costpf} to be
-ineffective in certain situations and that a sampling based approach is more
-complete. All of these approaches lack an elegant, sampling based algorithm
-that can take into account the stochastic trajectories of dynamic obstacles in
-order to rely less heavily on replanning, and to make use of the available
-information from the environment. The approach described in this work develops
-a formal representation dynamic obstacles that is able to take into account
-their stochasticity and presents a novel sampling based approach that is able
-generate low cost paths that can lead a robot to its goal.
+Some of the algorithms currently either assume that the planner only knows that
+the obstacles will move randomly around a point~\cite{rodriguez2007framework}
+or that the obstacles will move along a fixed
+trajectory~\cite{hsu2002randomized}, and if they deviate, a new plan is
+developed. Hsu et al.\ assumed perfect information about the obstacle
+trajectories to build an initial path through the environment, and if the
+information was incorrect or the obstacles deviate from their prescribed
+trajectories, the planner develops a new route to the goal. Berg et al.\
+increased the size of the dynamic obstacles in space time to account for random
+motion, but to plan around them, represented the obstacles as static objects in
+space-time thus not devising a cost metric for their motion. Likewise, the
+approaches that used safe interval path planning~\cite{asipp, sipp}, did not
+build probabilistic models of the obstacles, but instead determined intervals
+at which it would be safe to travel through certain areas and is thus heavily
+reliant on the robot waiting at certain locations. The evolutionary approaches
+described were geometric and also did account for the stochasticity in the
+known trajectories of the dynamic obstacles. The one approach that did create
+probabilistic models of the dynamic obstacles~\cite{jensen2003motion} employed
+a gradient decent method similar to that of potential fields that is described
+in Sec.~\ref{sec:costpf} to be ineffective in certain situations and that a
+sampling based approach is more complete. All of these approaches lack an
+elegant, sampling based algorithm that can take into account the stochastic
+trajectories of dynamic obstacles in order to rely less heavily on replanning,
+and to make use of the available information from the environment. The approach
+described in this work develops a formal representation dynamic obstacles that
+is able to take into account their stochasticity and presents a novel sampling
+based approach that is able to generate low cost paths that can lead a robot to
+its goal.
 
 \end{document}
