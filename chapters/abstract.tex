@@ -3,7 +3,20 @@
 
 \begin{abstract}
 
-
+    In the domain of mobile robotics, the ability for a robot to navigate
+    safely through an uncertain dynamic environment is a core component of
+    autonomy.  In many situations, the motion of dynamic obstacles is
+    predictable. This information can be used by a planner to generate safe,
+    collision free paths to the goal. This paper develops a novel probabilistic
+    representation of dynamic obstacles using their predicted trajectories that
+    can account for an obstacle diverging from its prescribed path. This
+    representation is used to add time dependent costs on the edges of a
+    probabilistic roadmap (PRM). A graph search algorithm is presented that can
+    find safe paths through the PRM to guide a robot from its initial
+    configuration to a goal configuration amidst stochastic dynamic obstacles.
+    The developed planning approach is shown to outperform a potential fields
+    planner for guiding a robot in multiple situations and for different
+    notions safety.
 
 \end{abstract}
 
