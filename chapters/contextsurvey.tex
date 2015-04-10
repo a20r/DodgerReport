@@ -9,8 +9,8 @@ For years the planning community has been developing algorithms that allow
 robots to navigate through environments to reach a goal. As research
 progressed, so did the complexity of the environments that the robots needed to
 move through. It started with static obstacles which remain stationary for the
-entirety of the plan, then on to dynamic obstacles with stochastic motion, to
-dynamic obstacles that have predictable paths that planners can exploit. For
+entirety of the execution, then on to dynamic obstacles with stochastic motion,
+to dynamic obstacles that have predictable paths that planners can exploit. For
 the last situation, a number of planners implementing different techniques have
 been created. Techniques include evolutionary computation on geometric
 structures in space-time to generate paths, safe interval path planning,
@@ -27,25 +27,25 @@ The obstacles were encoded by a set of vertices in a polygon. The chromosomes
 used in the genetic algorithms represented the paths that the robot can take to
 move to the goal where the path is comprised of the initial and goal points
 along with obstacle vertices.  The path generated for the robot would cling to
-the perimeter of an obstacle, until it could move towards the goal similar to
-the bug algorithm~\cite{weir}. The time at which the robot would reach each
-node was also encoded into the path. Moving obstacles were represented as
-static obstacles for a given time. Upon a sensed change in the environment such
-as a dynamic obstacle veering off its prescribed trajectory, replanning using
+the perimeters of obstacles, until the robot could move towards the goal
+similar to the bug algorithm~\cite{weir}. The time at which the robot would
+reach each node was also encoded into the path. Moving obstacles were
+represented as static obstacles for a given time. Upon a sensed change in the
+environment such as a dynamic obstacle veering off its prescribed trajectory,
 the genetic algorithm was used to regenerate a collision free path.
 
 Smierzchalski and Michalewicz have also used an evolutionary
 approach~\cite{evosurvey} where the chromosome represents the spatio temporal
 path in order to plan the movements of a ship in a harbour where the obstacles
-are other ships in a shipping lane~\cite{smierzchalski2005path}.  The higher
-the evaluation for the chromosome (i.e.\ the path) the safer and shorter the
-path is. Unlike the work done by Wang et al.\ the path can be comprised of any
-point in the search space.  The obstacles were represented geometrically and
-the dynamic obstacles were represented by their initial configuration and
-velocity.  Since the path represented in a spatio-temporal fashion, the genetic
-algorithm is able to determine if a path will collide with a dynamic obstacle
-by deducing where the dynamic obstacle will be at each time step along the path
-and checking for a collision.  Replanning using the evolutionary algorithm was
+are other ships in shipping lanes~\cite{smierzchalski2005path}. The higher the
+evaluation for the chromosome (i.e.\ the path) the safer and shorter the path
+is. Unlike the work done by Wang et al.\ the path can be comprised of any point
+in the search space.  The obstacles were represented geometrically and the
+dynamic obstacles were represented by their initial configuration and velocity.
+Since the path represented in a spatio-temporal fashion, the genetic algorithm
+is able to determine if a path will collide with a dynamic obstacle by deducing
+where the dynamic obstacle will be at each time step along the path and
+checking for a collision.  Replanning using the evolutionary algorithm was
 implemented to account for obstacles deviating from their prescribed
 trajectories.
 
@@ -55,7 +55,7 @@ trajectory bands~\cite{dunwei2011local}.  In order to account for the
 stochasticity in the obstacle trajectories, a distance around each obstacle's
 trajectory was used to describe how much the obstacle can deviate from it.
 Using these bands, an objective function was created that represents the safety
-of the generated path. PSO was used to generate a path that could minimize the
+of a generated path and PSO was used to generate a path that could minimize the
 objective function.
 
 \section{Safe Interval Path Planning}
